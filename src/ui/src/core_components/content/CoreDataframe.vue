@@ -91,7 +91,7 @@
 </template>
 
 <script lang="ts">
-import { Ref, computed, inject, ref, shallowRef } from "vue";
+import { computed, inject, ref, shallowRef } from "vue";
 import CoreDataframeCell from "./CoreDataframe/CoreDataframeCell.vue";
 import { FieldCategory, FieldType } from "../../writerTypes";
 import {
@@ -226,16 +226,16 @@ type OrderSetting = {
 };
 
 const fields = inject(injectionKeys.evaluatedFields);
-const rootEl: Ref<HTMLElement> = ref();
-const toolsEl: Ref<HTMLElement> = ref();
-const gridContainerEl: Ref<HTMLElement> = ref();
+const rootEl = ref<HTMLElement>();
+const toolsEl = ref<HTMLElement>();
+const gridContainerEl = ref<HTMLElement>();
 let baseTable: aq.internal.ColumnTable = null;
-const table: Ref<aq.internal.ColumnTable> = shallowRef(null);
-const tableIndex = ref([]);
+const table = shallowRef<aq.internal.ColumnTable>(null);
+const tableIndex = shallowRef([]);
 const isIndexShown = computed(() => fields.showIndex.value == "yes");
-const orderSetting: Ref<OrderSetting> = ref(null);
-const relativePosition: Ref<number> = ref(0);
-const columnWidths: Ref<number[]> = ref([]);
+const orderSetting = shallowRef<OrderSetting | null>(null);
+const relativePosition = ref(0);
+const columnWidths = ref<number[]>([]);
 let columnBeingWidthAdjusted: number = null;
 
 const columnNames: ComputedRef<string[]> = computed(() => {
