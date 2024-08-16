@@ -15,16 +15,9 @@
 				class="download"
 				@click="download"
 			>
-				<i class="material-symbols-outlined"> download </i>
+				<i class="material-symbols-outlined">download</i>
 			</WdsControl>
 		</div>
-		<TableEditor
-			v-if="table"
-			:display-index="isIndexShown"
-			:table="table"
-			:wrap-text="wrapText"
-			:max-rows-count="maxRowsCount"
-		></TableEditor>
 		<div ref="gridContainerEl" class="gridContainer" @scroll="handleScroll">
 			<div
 				class="grid"
@@ -55,26 +48,14 @@
 						{{ columnName }}
 					</div>
 					<div
+						v-show="orderSetting?.columnName == columnName"
 						class="icon"
-						:style="{
-							visibility:
-								orderSetting?.columnName == columnName
-									? 'visible'
-									: 'hidden',
-						}"
 					>
-						<span
-							v-show="!orderSetting?.descending"
-							class="material-symbols-outlined"
-						>
-							arrow_downward
-						</span>
-						<span
-							v-show="orderSetting?.descending"
-							class="material-symbols-outlined"
-						>
-							arrow_upward
-						</span>
+						<span class="material-symbols-outlined">{{
+							orderSetting?.descending
+								? "arrow_upward"
+								: "arrow_downward"
+						}}</span>
 					</div>
 					<div class="widthAdjuster"></div>
 				</div>
@@ -90,20 +71,14 @@
 							{{ indexColumnNames.map((c) => row[c]).join(", ") }}
 						</template>
 					</div>
-					<div
+					<CoreDataframeCell
 						v-for="columnName in shownColumnNames"
-						:key="columnName"
+						:key="`${row['__index_level_0__']}_${columnName}`"
 						class="cell"
-					>
-						<BaseMarkdown
-							v-if="fields.useMarkdown.value == 'yes'"
-							:raw-text="row[columnName]"
-						>
-						</BaseMarkdown>
-						<template v-else>
-							{{ row[columnName] }}
-						</template>
-					</div>
+						:value="row[columnName]"
+						:use-markdown="useMarkdown"
+						:editable="true"
+					/>
 				</template>
 			</div>
 			<div
@@ -116,7 +91,8 @@
 </template>
 
 <script lang="ts">
-import { Ref, computed, inject, ref } from "vue";
+import { Ref, computed, inject, ref, shallowRef } from "vue";
+import CoreDataframeCell from "./CoreDataframe/CoreDataframeCell.vue";
 import { FieldCategory, FieldType } from "../../writerTypes";
 import {
 	cssClasses,
@@ -131,8 +107,6 @@ import { ComputedRef } from "vue";
 import { onUnmounted } from "vue";
 import WdsTextInput from "../../wds/WdsTextInput.vue";
 import WdsControl from "../../wds/WdsControl.vue";
-import BaseMarkdown from "../base/BaseMarkdown.vue";
-import TableEditor from "../base/TableEditor.vue";
 
 const description = "A component to display Pandas DataFrames.";
 const defaultDataframe = `data:application/vnd.apache.arrow.file;base64,QVJST1cxAAD/////iAMAABAAAAAAAAoADgAGAAUACAAKAAAAAAEEABAAAAAAAAoADAAAAAQACAAKAAAAlAIAAAQAAAABAAAADAAAAAgADAAEAAgACAAAAGwCAAAEAAAAXwIAAHsiaW5kZXhfY29sdW1ucyI6IFsiX19pbmRleF9sZXZlbF8wX18iXSwgImNvbHVtbl9pbmRleGVzIjogW3sibmFtZSI6IG51bGwsICJmaWVsZF9uYW1lIjogbnVsbCwgInBhbmRhc190eXBlIjogInVuaWNvZGUiLCAibnVtcHlfdHlwZSI6ICJvYmplY3QiLCAibWV0YWRhdGEiOiB7ImVuY29kaW5nIjogIlVURi04In19XSwgImNvbHVtbnMiOiBbeyJuYW1lIjogImNvbF9hIiwgImZpZWxkX25hbWUiOiAiY29sX2EiLCAicGFuZGFzX3R5cGUiOiAiaW50NjQiLCAibnVtcHlfdHlwZSI6ICJpbnQ2NCIsICJtZXRhZGF0YSI6IG51bGx9LCB7Im5hbWUiOiAiY29sX2IiLCAiZmllbGRfbmFtZSI6ICJjb2xfYiIsICJwYW5kYXNfdHlwZSI6ICJpbnQ2NCIsICJudW1weV90eXBlIjogImludDY0IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6IG51bGwsICJmaWVsZF9uYW1lIjogIl9faW5kZXhfbGV2ZWxfMF9fIiwgInBhbmRhc190eXBlIjogImludDY0IiwgIm51bXB5X3R5cGUiOiAiaW50NjQiLCAibWV0YWRhdGEiOiBudWxsfV0sICJjcmVhdG9yIjogeyJsaWJyYXJ5IjogInB5YXJyb3ciLCAidmVyc2lvbiI6ICIxMi4wLjAifSwgInBhbmRhc192ZXJzaW9uIjogIjEuNS4zIn0ABgAAAHBhbmRhcwAAAwAAAIgAAABEAAAABAAAAJT///8AAAECEAAAACQAAAAEAAAAAAAAABEAAABfX2luZGV4X2xldmVsXzBfXwAAAJD///8AAAABQAAAAND///8AAAECEAAAABgAAAAEAAAAAAAAAAUAAABjb2xfYgAAAMD///8AAAABQAAAABAAFAAIAAYABwAMAAAAEAAQAAAAAAABAhAAAAAgAAAABAAAAAAAAAAFAAAAY29sX2EAAAAIAAwACAAHAAgAAAAAAAABQAAAAAAAAAD/////6AAAABQAAAAAAAAADAAWAAYABQAIAAwADAAAAAADBAAYAAAAMAAAAAAAAAAAAAoAGAAMAAQACAAKAAAAfAAAABAAAAACAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAABAAAAAAAAAAAAAAAAMAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAwAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAABAAAAAMABQABgAIAAwAEAAMAAAAAAAEADwAAAAoAAAABAAAAAEAAACYAwAAAAAAAPAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAACgAMAAAABAAIAAoAAACUAgAABAAAAAEAAAAMAAAACAAMAAQACAAIAAAAbAIAAAQAAABfAgAAeyJpbmRleF9jb2x1bW5zIjogWyJfX2luZGV4X2xldmVsXzBfXyJdLCAiY29sdW1uX2luZGV4ZXMiOiBbeyJuYW1lIjogbnVsbCwgImZpZWxkX25hbWUiOiBudWxsLCAicGFuZGFzX3R5cGUiOiAidW5pY29kZSIsICJudW1weV90eXBlIjogIm9iamVjdCIsICJtZXRhZGF0YSI6IHsiZW5jb2RpbmciOiAiVVRGLTgifX1dLCAiY29sdW1ucyI6IFt7Im5hbWUiOiAiY29sX2EiLCAiZmllbGRfbmFtZSI6ICJjb2xfYSIsICJwYW5kYXNfdHlwZSI6ICJpbnQ2NCIsICJudW1weV90eXBlIjogImludDY0IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJjb2xfYiIsICJmaWVsZF9uYW1lIjogImNvbF9iIiwgInBhbmRhc190eXBlIjogImludDY0IiwgIm51bXB5X3R5cGUiOiAiaW50NjQiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogbnVsbCwgImZpZWxkX25hbWUiOiAiX19pbmRleF9sZXZlbF8wX18iLCAicGFuZGFzX3R5cGUiOiAiaW50NjQiLCAibnVtcHlfdHlwZSI6ICJpbnQ2NCIsICJtZXRhZGF0YSI6IG51bGx9XSwgImNyZWF0b3IiOiB7ImxpYnJhcnkiOiAicHlhcnJvdyIsICJ2ZXJzaW9uIjogIjEyLjAuMCJ9LCAicGFuZGFzX3ZlcnNpb24iOiAiMS41LjMifQAGAAAAcGFuZGFzAAADAAAAiAAAAEQAAAAEAAAAlP///wAAAQIQAAAAJAAAAAQAAAAAAAAAEQAAAF9faW5kZXhfbGV2ZWxfMF9fAAAAkP///wAAAAFAAAAA0P///wAAAQIQAAAAGAAAAAQAAAAAAAAABQAAAGNvbF9iAAAAwP///wAAAAFAAAAAEAAUAAgABgAHAAwAAAAQABAAAAAAAAECEAAAACAAAAAEAAAAAAAAAAUAAABjb2xfYQAAAAgADAAIAAcACAAAAAAAAAFAAAAAsAMAAEFSUk9XMQ==`;
@@ -256,7 +230,7 @@ const rootEl: Ref<HTMLElement> = ref();
 const toolsEl: Ref<HTMLElement> = ref();
 const gridContainerEl: Ref<HTMLElement> = ref();
 let baseTable: aq.internal.ColumnTable = null;
-const table: Ref<aq.internal.ColumnTable> = ref(null);
+const table: Ref<aq.internal.ColumnTable> = shallowRef(null);
 const tableIndex = ref([]);
 const isIndexShown = computed(() => fields.showIndex.value == "yes");
 const orderSetting: Ref<OrderSetting> = ref(null);
@@ -291,10 +265,7 @@ const displayRowCount = computed(() =>
 	Math.min(fields.displayRowCount.value, rowCount.value),
 );
 
-const wrapText = computed(() => fields.wrapText.value == "yes");
-const maxRowsCount = computed(() =>
-	isRowCountMassive.value ? displayRowCount.value : MASSIVE_ROW_COUNT,
-);
+const useMarkdown = computed(() => fields.useMarkdown.value == "yes");
 
 const rowOffset = computed(() => {
 	let maxOffset: number;
@@ -327,6 +298,10 @@ const slicedTable = computed(() => {
 		data,
 		indices,
 	};
+});
+
+watch(slicedTable, () => console.log("##data", slicedTable.value), {
+	immediate: true,
 });
 
 const gridStyle = computed(() => {
@@ -431,7 +406,6 @@ async function loadData() {
 		const aqTable = aq.fromArrow(arrowTable);
 		baseTable = aqTable;
 		table.value = baseTable;
-		console.log(table.value);
 	} catch (e) {
 		// eslint-disable-next-line no-console
 		console.error("Couldn't load dataframe from Arrow URL.", e);
