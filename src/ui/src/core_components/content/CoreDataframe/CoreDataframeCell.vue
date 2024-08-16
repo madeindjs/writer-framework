@@ -8,6 +8,10 @@ defineProps({
 	editable: { type: Boolean, required: false },
 });
 
+const emits = defineEmits({
+	change: (value: string) => typeof value === "string",
+});
+
 const wrapper = ref<HTMLDivElement | undefined>();
 const textarea = ref<HTMLTextAreaElement | undefined>();
 const isEditing = ref(false);
@@ -16,7 +20,6 @@ const height = ref<number | undefined>();
 async function startEditing() {
 	height.value = wrapper.value?.getBoundingClientRect().height;
 	isEditing.value = true;
-
 	// focus on the textarea when it renders
 	await nextTick();
 	textarea.value.focus();
@@ -24,6 +27,7 @@ async function startEditing() {
 
 function stopEditing() {
 	isEditing.value = false;
+	emits("change", textarea.value.value);
 }
 </script>
 
