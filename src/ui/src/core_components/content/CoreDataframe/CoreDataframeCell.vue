@@ -19,7 +19,7 @@ const height = ref<number | undefined>();
 
 async function startEditing() {
 	if (!props.editable) return false;
-	height.value = wrapper.value?.getBoundingClientRect().height;
+	height.value = wrapper.value?.getBoundingClientRect().height - 16;
 	isEditing.value = true;
 	// focus on the textarea when it renders
 	await nextTick();
@@ -65,7 +65,11 @@ function stopEditing() {
 	width: 100%;
 	font-size: 0.75rem;
 
-	border: none;
+	border: unset;
 	resize: vertical;
+}
+.CoreDataframeCell textarea:focus {
+	border: unset;
+	outline: 1px solid var(--primaryTextColor);
 }
 </style>
