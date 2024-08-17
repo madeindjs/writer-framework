@@ -334,18 +334,10 @@ const slicedTable = computed(() => {
 		.indices()
 		.slice(rowOffset.value, rowOffset.value + displayRowCount.value);
 
-	data.map((row, index) => ({ ...row, ad_index: indices.at(index) }));
-
-	return {
-		data: data.map((row, index) => ({
-			...row,
-			ad_index: indices.at(index),
-		})),
-		// data,
-		indices,
-	};
+	return { data, indices };
 });
 
+// TODO: remove
 watch(slicedTable, () => console.log("##data", slicedTable.value), {
 	immediate: true,
 });
