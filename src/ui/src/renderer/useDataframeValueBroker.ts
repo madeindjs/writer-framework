@@ -31,7 +31,7 @@ export function useDataFrameValueBroker(
 	 * @param eventType
 	 * @returns
 	 */
-	function handleUpdate(
+	function handleUpdateCell(
 		columnName: string,
 		rowIndex: string | number,
 		value: string,
@@ -39,67 +39,16 @@ export function useDataFrameValueBroker(
 		if (!table.value) throw Error("Table is not ready");
 		const eventType = "wf-dataframe-update";
 
-		// table.value = table.value.union(
-		// 	from([{ __index_level_0__: rowIndex, Label: value }]),
-		// );
+		console.log("## derive started", columnName, rowIndex, value);
 
-		//
-		// table.value = table.value.derive(deriveObject);
-		// table.value = table.value
-		// 	.filter((d) => d.id === rowIndex)
-		// 	.derive({ age: newAge })
-		// 	.concat(table.filter((d) => d.id !== dynamicId));
-		//
-		// const tableUpdate = escape((row) => {
-		// 	console.log("##derive", row);
-		// 	return row["__index_level_0__"] === 1 ? value : row[columnName];
-		// },);
-		//
-		// table.value = table.value.derive({
-		// 	[columnName]: tableUpdate,
-		// });
-		//
-		//
-		const updater = escape((d, i) => {
-			if (i === rowIndex) {
-				return value;
-			}
-			return d[columnName];
+		// update arquero table
+
+		const updater = escape((d) => {
+			// TODO: not sure about using the id
+			return d.__index_level_0__ === rowIndex ? value : d[columnName];
 		});
 
-		table.value = table.value.derive({
-			[columnName]: updater,
-		});
-		// table.value = table.value.derive({
-		// 	[columnName]: (d, i) => {
-		// 		if (i === rowIndex) {
-		// 			return value;
-		// 		}
-		// 		return d[columnName];
-		// 	},
-		// });
-
-		// console.log("## derive started", columnName, rowIndex, value);
-		// table.value = table.value.params({ columnName, value }).derive({
-		// 	[columnName]: (row, $) => {
-		// 		console.log("## derive inner", row, $);
-		// 		return $.value;
-		// 	},
-		// });
-		// console.log(table.value.toHTML());
-		// console.log("## derive finished");
-		//
-		//
-		//
-		//
-		// table.value = table.value.derive({
-		// 	[columnName]: op.recode(
-		// 		op.case(
-		// 			[op.equal(op.get("id"), dynamicId), newValue],
-		// 			op.get(dynamicColumn),
-		// 		),
-		// 	),
-		// });
+		table.value = table.value.derive({ [columnName]: updater });
 
 		const isHandlerSet = component.value.handlers?.[eventType];
 		const isBindingSet = component.value.binding?.eventType == eventType;
@@ -121,7 +70,7 @@ export function useDataFrameValueBroker(
 		const callback = () => {
 			isBusy.value = false;
 			if (queuedEvent.value) {
-				handleUpdate(
+				handleUpdateCell(
 					queuedEvent.value.eventValue,
 					queuedEvent.value.emitEventType,
 				);
@@ -146,6 +95,6 @@ export function useDataFrameValueBroker(
 	}
 
 	return {
-		handleUpdate,
+		handleUpdateCell,
 	};
 }

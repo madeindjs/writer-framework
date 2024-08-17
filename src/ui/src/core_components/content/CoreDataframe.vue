@@ -79,7 +79,11 @@
 						:use-markdown="useMarkdown"
 						:editable="true"
 						@change="
-							handleUpdate(columnName, row['ad_index'], $event)
+							handleUpdateCell(
+								columnName,
+								row['__index_level_0__'],
+								$event,
+							)
 						"
 					/>
 				</template>
@@ -256,7 +260,7 @@ let columnBeingWidthAdjusted: number = null;
 const wf = inject(injectionKeys.core);
 const instancePath = inject(injectionKeys.instancePath);
 
-const { handleUpdate } = useDataFrameValueBroker(
+const { handleUpdateCell } = useDataFrameValueBroker(
 	wf,
 	instancePath,
 	rootEl,
