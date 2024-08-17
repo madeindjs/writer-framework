@@ -77,7 +77,7 @@
 						class="cell"
 						:value="row[columnName]"
 						:use-markdown="useMarkdown"
-						:editable="true"
+						:editable="enableEdit"
 						@change="
 							handleUpdateCell(
 								columnName,
@@ -154,6 +154,15 @@ export default {
 			},
 			enableSearch: {
 				name: "Enable search",
+				type: FieldType.Text,
+				default: "no",
+				options: {
+					yes: "yes",
+					no: "no",
+				},
+			},
+			enableEdit: {
+				name: "Enable edit",
 				type: FieldType.Text,
 				default: "no",
 				options: {
@@ -295,6 +304,7 @@ const displayRowCount = computed(() =>
 );
 
 const useMarkdown = computed(() => fields.useMarkdown.value == "yes");
+const enableEdit = computed(() => fields.enableEdit.value == "yes");
 
 const rowOffset = computed(() => {
 	let maxOffset: number;

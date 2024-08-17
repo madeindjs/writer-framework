@@ -2,7 +2,7 @@
 import { nextTick, ref } from "vue";
 import BaseMarkdown from "../../base/BaseMarkdown.vue";
 
-defineProps({
+const props = defineProps({
 	value: { type: String, required: true },
 	useMarkdown: { type: Boolean, required: false },
 	editable: { type: Boolean, required: false },
@@ -18,6 +18,7 @@ const isEditing = ref(false);
 const height = ref<number | undefined>();
 
 async function startEditing() {
+	if (!props.editable) return false;
 	height.value = wrapper.value?.getBoundingClientRect().height;
 	isEditing.value = true;
 	// focus on the textarea when it renders
@@ -32,7 +33,12 @@ function stopEditing() {
 </script>
 
 <template>
-	<div ref="wrapper" class="CoreDataframeCell" @click="startEditing">
+	<div
+		ref="wrapper"
+		class="CoreDataframeCell"
+		:class="{ 'CoreDataframeCell--editable': editable }"
+		@click="startEditing"
+	>
 		<textarea
 			v-if="isEditing"
 			ref="textarea"
@@ -52,7 +58,8 @@ function stopEditing() {
 </template>
 
 <style scoped>
-.CoreDataframeCell {
+.CoreDataframeCell--editable {
+	cursor: pointer;
 }
 .CoreDataframeCell textarea {
 	width: 100%;
