@@ -28,6 +28,8 @@ async function startEditing() {
 
 function stopEditing() {
 	isEditing.value = false;
+	const newValue = textarea.value.value;
+	if (newValue === props.value) return;
 	emits("change", textarea.value.value);
 }
 </script>

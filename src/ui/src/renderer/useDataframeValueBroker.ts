@@ -1,6 +1,7 @@
 import { ComponentPublicInstance, computed, Ref, ref, ShallowRef } from "vue";
 import { Core, InstancePath } from "../writerTypes";
 import { op, type internal, escape, from } from "arquero";
+import { ARQUERO_INTERNAL_ID } from "../core_components/content/CoreDataframe/constants";
 
 /**
  *
@@ -39,13 +40,9 @@ export function useDataFrameValueBroker(
 		if (!table.value) throw Error("Table is not ready");
 		const eventType = "wf-dataframe-update";
 
-		console.log("## derive started", columnName, rowIndex, value);
-
 		// update arquero table
-
 		const updater = escape((d) => {
-			// TODO: not sure about using the id
-			return d.__index_level_0__ === rowIndex ? value : d[columnName];
+			return d[ARQUERO_INTERNAL_ID] === rowIndex ? value : d[columnName];
 		});
 
 		table.value = table.value.derive({ [columnName]: updater });
