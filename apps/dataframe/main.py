@@ -4,7 +4,7 @@ import writer as wf
 import pandas
 import writer as wf
 
-df = pandas.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})
+df = pandas.DataFrame({'number': [1, 2, 3], 'text': ['one', 'two', 'three']})
 
 wf.init_state({
 	'mydf': wf.EditableDataframe(df)

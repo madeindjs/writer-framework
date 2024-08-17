@@ -1719,6 +1719,7 @@ class PandasRecordProcessor(DataframeRecordProcessor):
         >>> edf = EditableDataframe(df)
         >>> edf.record_update({"record_index": 12, "record": {"a": 1, "b": 2}})
         """
+        print('PandasRecordProcessor.record_update')
         _assert_record_match_pandas_df(df, payload['record'])
 
         record: dict
@@ -1944,6 +1945,7 @@ class EditableDataframe(MutableValue):
         >>> edf = EditableDataframe(df)
         >>> edf.record_update({"record_index": 0, "record": {"a": 2, "b": 2}})
         """
+        print('EditableDataframe.record_update')
         assert self.processor is not None
 
         self._df = self.processor.record_update(self.df, payload)

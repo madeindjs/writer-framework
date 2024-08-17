@@ -1,6 +1,6 @@
 import { ComponentPublicInstance, computed, Ref, ref, ShallowRef } from "vue";
 import { Core, InstancePath } from "../writerTypes";
-import { op, type internal, escape, from } from "arquero";
+import { type internal } from "arquero";
 import { ARQUERO_INTERNAL_ID } from "../core_components/content/CoreDataframe/constants";
 
 /**
@@ -18,8 +18,11 @@ export function useDataFrameValueBroker(
 	table: ShallowRef<internal.ColumnTable | null>,
 ) {
 	const isBusy = ref(false);
-	const queuedEvent: Ref<{ eventValue: string; emitEventType: string }> =
-		ref(null);
+	const queuedEvent: Ref<{
+		columnName: string;
+		rowIndex: number;
+		value: string;
+	}> = ref(null);
 
 	const componentId = instancePath.at(-1).componentId;
 	const component = computed(() => wf.getComponentById(componentId));
@@ -32,20 +35,34 @@ export function useDataFrameValueBroker(
 	 * @param eventType
 	 * @returns
 	 */
-	function handleUpdateCell(
+	async function handleUpdateCell(
 		columnName: string,
-		rowIndex: string | number,
+		rowIndex: number,
 		value: string,
 	) {
 		if (!table.value) throw Error("Table is not ready");
 		const eventType = "wf-dataframe-update";
 
+		const aq = await import("arquero");
+
 		// update arquero table
-		const updater = escape((d) => {
+		const updater = aq.escape((d: Record<string, unknown>) => {
 			return d[ARQUERO_INTERNAL_ID] === rowIndex ? value : d[columnName];
 		});
 
 		table.value = table.value.derive({ [columnName]: updater });
+
+		const filter = aq.escape((d: Record<string, unknown>) => {
+			return d[ARQUERO_INTERNAL_ID] === rowIndex;
+		});
+
+		const record = table.value.filter(filter).object();
+		delete record[ARQUERO_INTERNAL_ID];
+		console.log(
+			"##useDataFrameValueBroker updating record",
+			record,
+			rowIndex,
+		);
 
 		const isHandlerSet = component.value.handlers?.[eventType];
 		const isBindingSet = component.value.binding?.eventType == eventType;
@@ -55,11 +72,7 @@ export function useDataFrameValueBroker(
 
 		if (isBusy.value) {
 			// Queued event is overwritten for debouncing purposes
-
-			queuedEvent.value = {
-				eventValue: value,
-				emitEventType: eventType,
-			};
+			queuedEvent.value = { columnName, rowIndex, value };
 			return;
 		}
 
@@ -68,8 +81,9 @@ export function useDataFrameValueBroker(
 			isBusy.value = false;
 			if (queuedEvent.value) {
 				handleUpdateCell(
-					queuedEvent.value.eventValue,
-					queuedEvent.value.emitEventType,
+					queuedEvent.value.columnName,
+					queuedEvent.value.rowIndex,
+					queuedEvent.value.value,
 				);
 				queuedEvent.value = null;
 			}
@@ -77,10 +91,14 @@ export function useDataFrameValueBroker(
 
 		const event = new CustomEvent(eventType, {
 			detail: {
-				payload: value,
+				payload: {
+					record,
+					record_index: rowIndex,
+				},
 				callback,
 			},
 		});
+		console.log("##useDataFrameValueBroker dispatching event", event);
 
 		if (emitterEl.value instanceof HTMLElement) {
 			emitterEl.value.dispatchEvent(event);

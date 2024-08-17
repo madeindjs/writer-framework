@@ -3,7 +3,7 @@ import { nextTick, ref } from "vue";
 import BaseMarkdown from "../../base/BaseMarkdown.vue";
 
 const props = defineProps({
-	value: { type: String, required: true },
+	value: { validator: () => true, required: true },
 	useMarkdown: { type: Boolean, required: false },
 	editable: { type: Boolean, required: false },
 });
@@ -44,14 +44,14 @@ function stopEditing() {
 		<textarea
 			v-if="isEditing"
 			ref="textarea"
-			:value="value"
+			:value="String(value)"
 			:style="{
 				height: height ? `${height}px` : 'auto',
 			}"
 			@focusout="stopEditing"
 		></textarea>
 		<template v-else>
-			<BaseMarkdown v-if="useMarkdown" :raw-text="value"> </BaseMarkdown>
+			<BaseMarkdown v-if="useMarkdown" :raw-text="String(value)" />
 			<template v-else>
 				{{ value }}
 			</template>
