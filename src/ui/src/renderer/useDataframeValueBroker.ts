@@ -40,6 +40,7 @@ export function useDataFrameValueBroker(
 		rowIndex: number,
 		value: string,
 	) {
+		let rowIndexBackend = rowIndex - 1; // 0-based index (arquero is based on 1-based index)
 		if (!table.value) throw Error("Table is not ready");
 		const eventType = "wf-dataframe-update";
 
@@ -61,7 +62,7 @@ export function useDataFrameValueBroker(
 		console.log(
 			"##useDataFrameValueBroker updating record",
 			record,
-			rowIndex,
+			rowIndexBackend,
 		);
 
 		const isHandlerSet = component.value.handlers?.[eventType];
@@ -93,7 +94,7 @@ export function useDataFrameValueBroker(
 			detail: {
 				payload: {
 					record,
-					record_index: rowIndex,
+					record_index: rowIndexBackend,
 				},
 				callback,
 			},
