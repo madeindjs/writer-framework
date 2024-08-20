@@ -3,7 +3,6 @@ import { computed } from "vue";
 
 const props = defineProps({
 	value: { type: Boolean, required: true },
-	useMarkdown: { type: Boolean, required: false },
 	editable: { type: Boolean, required: false },
 });
 
@@ -15,6 +14,7 @@ const label = computed(() => (props.value ? "True" : "False"));
 
 function onChange(event: InputEvent) {
 	if (!props.editable) {
+		// `readonly` props on checkbox has no effect, so we manually prevent when element is disabled
 		event.preventDefault();
 		event.stopPropagation();
 		return;

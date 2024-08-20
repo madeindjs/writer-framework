@@ -37,8 +37,8 @@ function stopEditing() {
 <template>
 	<div
 		ref="wrapper"
-		class="CoreDataframeCell"
-		:class="{ 'CoreDataframeCell--editable': editable }"
+		class="CoreDataframeCellText"
+		:class="{ 'CoreDataframeCellText--editable': editable }"
 		@click="startEditing"
 	>
 		<textarea
@@ -60,17 +60,17 @@ function stopEditing() {
 </template>
 
 <style scoped>
-.CoreDataframeCell--editable {
+.CoreDataframeCellText--editable {
 	cursor: pointer;
 }
-.CoreDataframeCell textarea {
+.CoreDataframeCellText textarea {
 	width: 100%;
 	font-size: 0.75rem;
 
 	border: unset;
 	resize: vertical;
 }
-.CoreDataframeCell textarea:focus {
+.CoreDataframeCellText textarea:focus {
 	border: unset;
 	outline: 1px solid var(--accentColor);
 }

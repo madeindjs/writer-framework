@@ -3,6 +3,7 @@ import { computed } from "vue";
 import CoreDataFrameCellNumber from "./CoreDataframeCellNumber.vue";
 import CoreDataFrameCellText from "./CoreDataframeCellText.vue";
 import CoreDataFrameCellBoolean from "./CoreDataframeCellBoolean.vue";
+import CoreDataframeCellUnknown from "./CoreDataframeCellUnknown.vue";
 
 const props = defineProps({
 	value: { validator: () => true, required: true },
@@ -21,8 +22,10 @@ const component = computed(() => {
 			return CoreDataFrameCellNumber;
 		case "boolean":
 			return CoreDataFrameCellBoolean;
-		default:
+		case "string":
 			return CoreDataFrameCellText;
+		default:
+			return CoreDataframeCellUnknown;
 	}
 });
 </script>

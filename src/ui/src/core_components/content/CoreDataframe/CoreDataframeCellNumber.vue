@@ -2,8 +2,10 @@
 import { nextTick, ref } from "vue";
 
 const props = defineProps({
-	value: { type: Number, required: true },
-	useMarkdown: { type: Boolean, required: false },
+	value: {
+		validator: (v) => typeof v === "number" || typeof v === "bigint",
+		required: true,
+	},
 	editable: { type: Boolean, required: false },
 });
 
@@ -34,8 +36,8 @@ function stopEditing() {
 <template>
 	<div
 		ref="wrapper"
-		class="CoreDataframeCell"
-		:class="{ 'CoreDataframeCell--editable': editable }"
+		class="CoreDataframeCellNumber"
+		:class="{ 'CoreDataframeCellNumber--editable': editable }"
 		@click="startEditing"
 	>
 		<input
@@ -52,17 +54,17 @@ function stopEditing() {
 </template>
 
 <style scoped>
-.CoreDataframeCell--editable {
+.CoreDataframeCellNumber--editable {
 	cursor: pointer;
 }
-.CoreDataframeCell input {
+.CoreDataframeCellNumber input {
 	width: 100%;
 	font-size: 0.75rem;
 
 	border: unset;
 	resize: vertical;
 }
-.CoreDataframeCell input:focus {
+.CoreDataframeCellNumber input:focus {
 	border: unset;
 	outline: 1px solid var(--accentColor);
 }

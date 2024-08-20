@@ -7,6 +7,7 @@ import writer as wf
 df = pandas.DataFrame({
     'number': [1, 2, 3],
     'boolean': [True, False, True],
+    'object': [{"one": 1}, {"two": 2}, {"three": 3}],
     'text': ['one', 'two', 'three'],
 })
 
