@@ -12,24 +12,22 @@ const emits = defineEmits({
 });
 
 const wrapper = ref<HTMLDivElement | undefined>();
-const textarea = ref<HTMLTextAreaElement | undefined>();
+const input = ref<HTMLTextAreaElement | undefined>();
 const isEditing = ref(false);
-const height = ref<number | undefined>();
 
 async function startEditing() {
 	if (!props.editable) return false;
-	height.value = wrapper.value?.getBoundingClientRect().height - 16 - 1;
 	isEditing.value = true;
-	// focus on the textarea when it renders
+	// focus on the input when it renders
 	await nextTick();
-	textarea.value.focus();
+	input.value.focus();
 }
 
 function stopEditing() {
 	isEditing.value = false;
-	const newValue = Number(textarea.value.value);
+	const newValue = Number(input.value.value);
 	if (newValue === props.value) return;
-	emits("change", textarea.value.value);
+	emits("change", input.value.value);
 }
 </script>
 
@@ -42,12 +40,9 @@ function stopEditing() {
 	>
 		<input
 			v-if="isEditing"
-			ref="textarea"
+			ref="input"
 			type="number"
 			:value="value"
-			:style="{
-				height: height ? `${height}px` : 'auto',
-			}"
 			@focusout="stopEditing"
 		/>
 		<template v-else>
