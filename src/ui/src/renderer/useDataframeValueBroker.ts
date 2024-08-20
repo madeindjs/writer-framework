@@ -27,7 +27,7 @@ export function useDataFrameValueBroker(
 	const queuedEvent: Ref<{
 		columnName: string;
 		rowIndex: number;
-		value: string;
+		value: unknown;
 	}> = ref(null);
 
 	const componentId = instancePath.at(-1).componentId;
@@ -44,7 +44,7 @@ export function useDataFrameValueBroker(
 	async function handleUpdateCell(
 		columnName: string,
 		rowIndex: number,
-		value: string,
+		value: unknown,
 	) {
 		if (!table.value) throw Error("Table is not ready");
 		const eventType = "wf-dataframe-update";
@@ -124,7 +124,7 @@ export function useDataFrameValueBroker(
 	};
 }
 
-function formatValue(previousValue: unknown, value: string) {
+function formatValue(previousValue: unknown, value: unknown) {
 	switch (typeof previousValue) {
 		case "number":
 			return Number(value);
@@ -133,7 +133,7 @@ function formatValue(previousValue: unknown, value: string) {
 		case "boolean":
 			return Boolean(value);
 		case "bigint":
-			return BigInt(value);
+			return BigInt(String(value));
 		default:
 			throw Error(
 				`Could not update a field of type ${typeof previousValue}`,

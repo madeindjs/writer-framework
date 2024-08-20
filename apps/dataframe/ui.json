@@ -1,6 +1,6 @@
 {
     "metadata": {
-        "writer_version": "0.6.2rc3"
+        "writer_version": "0.7.0rc2"
     },
     "components": {
         "root": {
@@ -40,6 +40,17 @@
             "handlers": {
                 "wf-dataframe-update": "on_record_change"
             },
+            "visible": true
+        },
+        "aqombckyh59b1a3g": {
+            "id": "aqombckyh59b1a3g",
+            "type": "text",
+            "parentId": "c0f99a9e-5004-4e75-a6c6-36f17490b134",
+            "content": {
+                "text": "@{mydf}"
+            },
+            "handlers": {},
+            "position": 1,
             "visible": true
         }
     }
