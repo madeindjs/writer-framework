@@ -39,6 +39,8 @@ function stopEditing() {
 		ref="wrapper"
 		class="CoreDataframeCellText"
 		:class="{ 'CoreDataframeCellText--editable': editable }"
+		:tabindex="editable && !isEditing ? 0 : -1"
+		@focusin="startEditing"
 		@click="startEditing"
 	>
 		<textarea

@@ -38,6 +38,8 @@ function stopEditing() {
 		ref="wrapper"
 		class="CoreDataframeCellNumber"
 		:class="{ 'CoreDataframeCellNumber--editable': editable }"
+		:tabindex="editable && !isEditing ? 0 : -1"
+		@focusin="startEditing"
 		@click="startEditing"
 	>
 		<input
