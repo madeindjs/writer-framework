@@ -105,6 +105,7 @@ import {
 	cssClasses,
 	primaryTextColor,
 	secondaryTextColor,
+	accentColor,
 	separatorColor,
 } from "../../renderer/sharedStyleFields";
 import { onMounted } from "vue";
@@ -213,6 +214,7 @@ export default {
 			},
 			primaryTextColor,
 			secondaryTextColor,
+			accentColor,
 			separatorColor,
 			dataframeBackgroundColor: {
 				name: "Background",

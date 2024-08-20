@@ -72,6 +72,6 @@ function stopEditing() {
 }
 .CoreDataframeCell textarea:focus {
 	border: unset;
-	outline: 1px solid var(--primaryTextColor);
+	outline: 1px solid var(--accentColor);
 }
 </style>

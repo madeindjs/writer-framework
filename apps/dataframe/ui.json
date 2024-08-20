@@ -42,12 +42,12 @@
             },
             "visible": true
         },
-        "aqombckyh59b1a3g": {
-            "id": "aqombckyh59b1a3g",
-            "type": "text",
+        "76fflgx8jrurndpq": {
+            "id": "76fflgx8jrurndpq",
+            "type": "dataframe",
             "parentId": "c0f99a9e-5004-4e75-a6c6-36f17490b134",
             "content": {
-                "text": "@{mydf}"
+                "dataframe": "@{mydf}"
             },
             "handlers": {},
             "position": 1,
