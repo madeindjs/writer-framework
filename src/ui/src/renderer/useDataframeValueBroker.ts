@@ -55,24 +55,7 @@ export function useDataFrameValueBroker(
 		if (!previousRecord) throw Error("Could not find record");
 		const previousValue = previousRecord[columnName];
 
-		let valueTyped: unknown = value;
-
-		switch (typeof previousValue) {
-			case "number":
-				valueTyped = Number(value);
-				break;
-			case "boolean":
-				valueTyped = Boolean(value);
-				break;
-			case "bigint":
-				valueTyped = BigInt(value);
-				break;
-			case "object":
-			case "function":
-				throw Error(
-					`Could not update a field of type ${typeof previousValue}`,
-				);
-		}
+		const valueTyped = formatValue(previousValue, value);
 
 		// update arquero table
 		const updater = aq.escape((d: Record<string, unknown>) => {
@@ -139,4 +122,19 @@ export function useDataFrameValueBroker(
 	return {
 		handleUpdateCell,
 	};
+}
+
+function formatValue(previousValue: unknown, value: string) {
+	switch (typeof previousValue) {
+		case "number":
+			return Number(value);
+		case "boolean":
+			return Boolean(value);
+		case "bigint":
+			return BigInt(value);
+		default:
+			throw Error(
+				`Could not update a field of type ${typeof previousValue}`,
+			);
+	}
 }
