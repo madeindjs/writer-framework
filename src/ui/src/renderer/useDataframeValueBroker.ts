@@ -40,24 +40,50 @@ export function useDataFrameValueBroker(
 		rowIndex: number,
 		value: string,
 	) {
-		let rowIndexBackend = rowIndex - 1; // 0-based index (arquero is based on 1-based index)
 		if (!table.value) throw Error("Table is not ready");
 		const eventType = "wf-dataframe-update";
+		const rowIndexBackend = rowIndex - 1; // 0-based index (arquero is based on 1-based index)
 
 		const aq = await import("arquero");
 
+		const recordFilter = aq.escape(
+			(d: Record<string, unknown>) => d[ARQUERO_INTERNAL_ID] === rowIndex,
+		);
+
+		// get previous value to format it
+		const previousRecord = table.value.filter(recordFilter).object();
+		if (!previousRecord) throw Error("Could not find record");
+		const previousValue = previousRecord[columnName];
+
+		let valueTyped: unknown = value;
+
+		switch (typeof previousValue) {
+			case "number":
+				valueTyped = Number(value);
+				break;
+			case "boolean":
+				valueTyped = Boolean(value);
+				break;
+			case "bigint":
+				valueTyped = BigInt(value);
+				break;
+			case "object":
+			case "function":
+				throw Error(
+					`Could not update a field of type ${typeof previousValue}`,
+				);
+		}
+
 		// update arquero table
 		const updater = aq.escape((d: Record<string, unknown>) => {
-			return d[ARQUERO_INTERNAL_ID] === rowIndex ? value : d[columnName];
+			return d[ARQUERO_INTERNAL_ID] === rowIndex
+				? valueTyped
+				: d[columnName];
 		});
 
 		table.value = table.value.derive({ [columnName]: updater });
 
-		const filter = aq.escape((d: Record<string, unknown>) => {
-			return d[ARQUERO_INTERNAL_ID] === rowIndex;
-		});
-
-		const record = table.value.filter(filter).object();
+		const record = table.value.filter(recordFilter).object();
 		delete record[ARQUERO_INTERNAL_ID];
 		console.log(
 			"##useDataFrameValueBroker updating record",
