@@ -1,4 +1,11 @@
-import { ComponentPublicInstance, computed, Ref, ref, ShallowRef } from "vue";
+import {
+	ComponentPublicInstance,
+	computed,
+	readonly,
+	Ref,
+	ref,
+	ShallowRef,
+} from "vue";
 import { Core, InstancePath } from "../writerTypes";
 import { type internal } from "arquero";
 import { ARQUERO_INTERNAL_ID } from "../core_components/content/CoreDataframe/constants";
@@ -9,7 +16,6 @@ import { ARQUERO_INTERNAL_ID } from "../core_components/content/CoreDataframe/co
  *
  * @param wf
  * @param componentId
- * @returns
  */
 export function useDataFrameValueBroker(
 	wf: Core,
@@ -68,11 +74,6 @@ export function useDataFrameValueBroker(
 
 		const record = table.value.filter(recordFilter).object();
 		delete record[ARQUERO_INTERNAL_ID];
-		console.log(
-			"##useDataFrameValueBroker updating record",
-			record,
-			rowIndexBackend,
-		);
 
 		const isHandlerSet = component.value.handlers?.[eventType];
 		const isBindingSet = component.value.binding?.eventType == eventType;
@@ -108,19 +109,18 @@ export function useDataFrameValueBroker(
 				callback,
 			},
 		});
-		console.log("##useDataFrameValueBroker dispatching event", event);
 
 		if (emitterEl.value instanceof HTMLElement) {
 			emitterEl.value.dispatchEvent(event);
 		} else {
 			// Vue instance (ComponentPublicInstance)
-
 			emitterEl.value.$el.dispatchEvent(event);
 		}
 	}
 
 	return {
 		handleUpdateCell,
+		isBusy: readonly(isBusy),
 	};
 }
 
@@ -128,6 +128,8 @@ function formatValue(previousValue: unknown, value: string) {
 	switch (typeof previousValue) {
 		case "number":
 			return Number(value);
+		case "string":
+			return String(value);
 		case "boolean":
 			return Boolean(value);
 		case "bigint":

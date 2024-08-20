@@ -19,7 +19,7 @@ const height = ref<number | undefined>();
 
 async function startEditing() {
 	if (!props.editable) return false;
-	height.value = wrapper.value?.getBoundingClientRect().height - 16;
+	height.value = wrapper.value?.getBoundingClientRect().height - 16 - 1;
 	isEditing.value = true;
 	// focus on the textarea when it renders
 	await nextTick();

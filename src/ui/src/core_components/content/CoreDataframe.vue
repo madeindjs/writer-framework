@@ -1,5 +1,5 @@
 <template>
-	<div ref="rootEl" class="CoreDataframe">
+	<div ref="rootEl" class="CoreDataframe" :aria-busy="isBusy">
 		<div ref="toolsEl" class="tools">
 			<div v-if="fields.enableSearch.value === 'yes'">
 				<WdsTextInput
@@ -77,7 +77,7 @@
 						class="cell"
 						:value="row[columnName]"
 						:use-markdown="useMarkdown"
-						:editable="enableEdit"
+						:editable="enableEdit && !isBusy"
 						@change="
 							handleUpdateCell(
 								columnName,
@@ -115,10 +115,12 @@ import { onUnmounted } from "vue";
 import WdsTextInput from "../../wds/WdsTextInput.vue";
 import WdsControl from "../../wds/WdsControl.vue";
 import { useDataFrameValueBroker } from "../../renderer/useDataframeValueBroker";
-import { ARQUERO_INTERNAL_ID } from "./CoreDataframe/constants";
+import {
+	ARQUERO_INTERNAL_ID,
+	DEFAULT_DATA_FRAME,
+} from "./CoreDataframe/constants";
 
 const description = "A component to display Pandas DataFrames.";
-const defaultDataframe = `data:application/vnd.apache.arrow.file;base64,QVJST1cxAAD/////iAMAABAAAAAAAAoADgAGAAUACAAKAAAAAAEEABAAAAAAAAoADAAAAAQACAAKAAAAlAIAAAQAAAABAAAADAAAAAgADAAEAAgACAAAAGwCAAAEAAAAXwIAAHsiaW5kZXhfY29sdW1ucyI6IFsiX19pbmRleF9sZXZlbF8wX18iXSwgImNvbHVtbl9pbmRleGVzIjogW3sibmFtZSI6IG51bGwsICJmaWVsZF9uYW1lIjogbnVsbCwgInBhbmRhc190eXBlIjogInVuaWNvZGUiLCAibnVtcHlfdHlwZSI6ICJvYmplY3QiLCAibWV0YWRhdGEiOiB7ImVuY29kaW5nIjogIlVURi04In19XSwgImNvbHVtbnMiOiBbeyJuYW1lIjogImNvbF9hIiwgImZpZWxkX25hbWUiOiAiY29sX2EiLCAicGFuZGFzX3R5cGUiOiAiaW50NjQiLCAibnVtcHlfdHlwZSI6ICJpbnQ2NCIsICJtZXRhZGF0YSI6IG51bGx9LCB7Im5hbWUiOiAiY29sX2IiLCAiZmllbGRfbmFtZSI6ICJjb2xfYiIsICJwYW5kYXNfdHlwZSI6ICJpbnQ2NCIsICJudW1weV90eXBlIjogImludDY0IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6IG51bGwsICJmaWVsZF9uYW1lIjogIl9faW5kZXhfbGV2ZWxfMF9fIiwgInBhbmRhc190eXBlIjogImludDY0IiwgIm51bXB5X3R5cGUiOiAiaW50NjQiLCAibWV0YWRhdGEiOiBudWxsfV0sICJjcmVhdG9yIjogeyJsaWJyYXJ5IjogInB5YXJyb3ciLCAidmVyc2lvbiI6ICIxMi4wLjAifSwgInBhbmRhc192ZXJzaW9uIjogIjEuNS4zIn0ABgAAAHBhbmRhcwAAAwAAAIgAAABEAAAABAAAAJT///8AAAECEAAAACQAAAAEAAAAAAAAABEAAABfX2luZGV4X2xldmVsXzBfXwAAAJD///8AAAABQAAAAND///8AAAECEAAAABgAAAAEAAAAAAAAAAUAAABjb2xfYgAAAMD///8AAAABQAAAABAAFAAIAAYABwAMAAAAEAAQAAAAAAABAhAAAAAgAAAABAAAAAAAAAAFAAAAY29sX2EAAAAIAAwACAAHAAgAAAAAAAABQAAAAAAAAAD/////6AAAABQAAAAAAAAADAAWAAYABQAIAAwADAAAAAADBAAYAAAAMAAAAAAAAAAAAAoAGAAMAAQACAAKAAAAfAAAABAAAAACAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAABAAAAAAAAAAAAAAAAMAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAwAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAABAAAAAMABQABgAIAAwAEAAMAAAAAAAEADwAAAAoAAAABAAAAAEAAACYAwAAAAAAAPAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAACgAMAAAABAAIAAoAAACUAgAABAAAAAEAAAAMAAAACAAMAAQACAAIAAAAbAIAAAQAAABfAgAAeyJpbmRleF9jb2x1bW5zIjogWyJfX2luZGV4X2xldmVsXzBfXyJdLCAiY29sdW1uX2luZGV4ZXMiOiBbeyJuYW1lIjogbnVsbCwgImZpZWxkX25hbWUiOiBudWxsLCAicGFuZGFzX3R5cGUiOiAidW5pY29kZSIsICJudW1weV90eXBlIjogIm9iamVjdCIsICJtZXRhZGF0YSI6IHsiZW5jb2RpbmciOiAiVVRGLTgifX1dLCAiY29sdW1ucyI6IFt7Im5hbWUiOiAiY29sX2EiLCAiZmllbGRfbmFtZSI6ICJjb2xfYSIsICJwYW5kYXNfdHlwZSI6ICJpbnQ2NCIsICJudW1weV90eXBlIjogImludDY0IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJjb2xfYiIsICJmaWVsZF9uYW1lIjogImNvbF9iIiwgInBhbmRhc190eXBlIjogImludDY0IiwgIm51bXB5X3R5cGUiOiAiaW50NjQiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogbnVsbCwgImZpZWxkX25hbWUiOiAiX19pbmRleF9sZXZlbF8wX18iLCAicGFuZGFzX3R5cGUiOiAiaW50NjQiLCAibnVtcHlfdHlwZSI6ICJpbnQ2NCIsICJtZXRhZGF0YSI6IG51bGx9XSwgImNyZWF0b3IiOiB7ImxpYnJhcnkiOiAicHlhcnJvdyIsICJ2ZXJzaW9uIjogIjEyLjAuMCJ9LCAicGFuZGFzX3ZlcnNpb24iOiAiMS41LjMifQAGAAAAcGFuZGFzAAADAAAAiAAAAEQAAAAEAAAAlP///wAAAQIQAAAAJAAAAAQAAAAAAAAAEQAAAF9faW5kZXhfbGV2ZWxfMF9fAAAAkP///wAAAAFAAAAA0P///wAAAQIQAAAAGAAAAAQAAAAAAAAABQAAAGNvbF9iAAAAwP///wAAAAFAAAAAEAAUAAgABgAHAAwAAAAQABAAAAAAAAECEAAAACAAAAAEAAAAAAAAAAUAAABjb2xfYQAAAAgADAAIAAcACAAAAAAAAAFAAAAAsAMAAEFSUk9XMQ==`;
 
 const dataFrameUpdateHandlerStub = `
 # Subscribe this event handler to the \`wf-dataframe-update\` event
@@ -141,7 +143,7 @@ export default {
 				name: "Data",
 				desc: "Must be a state reference to a Pandas dataframe or PyArrow table. Alternatively, a URL for an Arrow IPC file.",
 				type: FieldType.Text,
-				default: defaultDataframe,
+				default: DEFAULT_DATA_FRAME,
 			},
 			showIndex: {
 				name: "Show index",
@@ -234,6 +236,7 @@ export default {
 	},
 };
 </script>
+
 <script setup lang="ts">
 import injectionKeys from "../../injectionKeys";
 import type * as aq from "arquero";
@@ -270,12 +273,14 @@ let columnBeingWidthAdjusted: number = null;
 const wf = inject(injectionKeys.core);
 const instancePath = inject(injectionKeys.instancePath);
 
-const { handleUpdateCell } = useDataFrameValueBroker(
+const { handleUpdateCell, isBusy: isUpdatingBusy } = useDataFrameValueBroker(
 	wf,
 	instancePath,
 	rootEl,
 	table,
 );
+
+const isBusy = computed(() => isLoadingData.value || isUpdatingBusy.value);
 
 const columnNames: ComputedRef<string[]> = computed(() => {
 	if (!table.value) {
@@ -337,11 +342,6 @@ const slicedTable = computed(() => {
 		.slice(rowOffset.value, rowOffset.value + displayRowCount.value);
 
 	return { data, indices };
-});
-
-// TODO: remove
-watch(slicedTable, () => console.log("##data", slicedTable.value), {
-	immediate: true,
 });
 
 const gridStyle = computed(() => {
@@ -432,7 +432,10 @@ function getIndexFromArrowTable(table: Table) {
 	return pandasMetadata.index_columns;
 }
 
+const isLoadingData = ref(false);
+
 async function loadData() {
+	isLoadingData.value = true;
 	const aq = await import("arquero");
 	const { tableFromIPC } = await import("apache-arrow");
 	const url = fields.dataframe.value;
@@ -452,6 +455,8 @@ async function loadData() {
 	} catch (e) {
 		// eslint-disable-next-line no-console
 		console.error("Couldn't load dataframe from Arrow URL.", e);
+	} finally {
+		isLoadingData.value = false;
 	}
 }
 
