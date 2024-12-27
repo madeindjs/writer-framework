@@ -69,7 +69,7 @@ const definition: WriterComponentDefinition = {
 					errors.push('The value need to be "yes" or "no"');
 				}
 
-				return { errors };
+				return errors;
 			},
 		},
 		alignment: {

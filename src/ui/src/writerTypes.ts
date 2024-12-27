@@ -58,7 +58,7 @@ export type InstancePath = InstancePathItem[];
 export type WriterComponentDefinitionFieldValidator = (
 	value: unknown,
 	fields: Record<string, unknown>,
-) => { errors: string[]; valid: boolean };
+) => string[];
 
 /**
  * Defines component structure and behaviour. Included in Component templates.
@@ -83,10 +83,7 @@ export type WriterComponentDefinitionField = {
 	category?: FieldCategory;
 	/** Use the value of this field as a CSS variable */
 	applyStyleVariable?: boolean;
-	validator?: (
-		value: unknown,
-		fields: Record<string, unknown>,
-	) => { errors: string[]; valid: boolean };
+	validator?: WriterComponentDefinitionFieldValidator;
 };
 
 export type WriterComponentDefinition = {

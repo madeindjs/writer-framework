@@ -29,7 +29,7 @@
 					"
 					:hint="fieldValue.desc"
 					:unit="fieldValue.type"
-					:error="computeErrorField(fieldKey)"
+					:error="errorsByFields[fieldKey]"
 				>
 					<BuilderFieldsColor
 						v-if="fieldValue.type == FieldType.Color"
@@ -54,7 +54,7 @@
 						v-if="fieldValue.type == FieldType.Text"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
-						:error="computeErrorField(fieldKey)"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsText>
 
 					<BuilderFieldsText
@@ -157,12 +157,12 @@ function computeErrorField(fieldKey: string) {
 		selectedInstancePath.value,
 	);
 
-	return (
-		validator(evaluatedField[fieldKey].value, evaluatedField).errors.join(
-			"\n",
-		) || undefined
+	return validator(evaluatedField[fieldKey].value, evaluatedField)?.join(
+		"\n",
 	);
 }
+
+const errorsByFields = useEvaluator(wf).useFieldsError(selectedInstancePath);
 
 const fieldCategories = computed(() => {
 	return [
