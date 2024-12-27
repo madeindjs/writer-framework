@@ -24,7 +24,12 @@
 <script lang="ts">
 import { cssClasses, primaryTextColor } from "@/renderer/sharedStyleFields";
 import { getClick } from "@/renderer/syntheticEvents";
-import { FieldCategory, FieldControl, FieldType } from "@/writerTypes";
+import {
+	FieldCategory,
+	FieldControl,
+	FieldType,
+	WriterComponentDefinition,
+} from "@/writerTypes";
 
 const clickHandlerStub = `
 def click_handler(state):
@@ -36,52 +41,61 @@ def click_handler(state):
 const description =
 	"A component to display plain text or formatted text using Markdown syntax.";
 
-export default {
-	writer: {
-		name: "Text",
-		description,
-		category: "Content",
-		fields: {
-			text: {
-				name: "Text",
-				init: "Text",
-				desc: "Add text directly, or reference state elements with @{my_text}.",
-				type: FieldType.Text,
-				control: FieldControl.Textarea,
-			},
-			useMarkdown: {
-				name: "Use Markdown",
-				desc: "The Markdown output will be sanitised; unsafe elements will be removed.",
-				default: "no",
-				type: FieldType.Text,
-				options: {
-					yes: "Yes",
-					no: "No",
-				},
-			},
-			alignment: {
-				name: "Alignment",
-				default: "left",
-				type: FieldType.Text,
-				options: {
-					left: "Left",
-					center: "Center",
-					right: "Right",
-				},
-				category: FieldCategory.Style,
-			},
-			primaryTextColor,
-			cssClasses,
+const definition: WriterComponentDefinition = {
+	name: "Text",
+	description,
+	category: "Content",
+	fields: {
+		text: {
+			name: "Text",
+			init: "Text",
+			desc: "Add text directly, or reference state elements with @{my_text}.",
+			type: FieldType.Text,
+			control: FieldControl.Textarea,
 		},
-		events: {
-			"wf-click": {
-				desc: "Capture single clicks.",
-				stub: clickHandlerStub.trim(),
+		useMarkdown: {
+			name: "Use Markdown",
+			desc: "The Markdown output will be sanitised; unsafe elements will be removed.",
+			default: "no",
+			type: FieldType.Text,
+			options: {
+				yes: "Yes",
+				no: "No",
+			},
+			validator(value: string) {
+				const errors = [];
+				console.log(value);
+				if (value && !["yes", "no"].includes(value)) {
+					errors.push('The value need to be "yes" or "no"');
+				}
+
+				return { errors };
 			},
 		},
-		previewField: "text",
+		alignment: {
+			name: "Alignment",
+			default: "left",
+			type: FieldType.Text,
+			options: {
+				left: "Left",
+				center: "Center",
+				right: "Right",
+			},
+			category: FieldCategory.Style,
+		},
+		primaryTextColor,
+		cssClasses,
 	},
+	events: {
+		"wf-click": {
+			desc: "Capture single clicks.",
+			stub: clickHandlerStub.trim(),
+		},
+	},
+	previewField: "text",
 };
+
+export default { writer: definition };
 </script>
 <script setup lang="ts">
 import { Ref, computed, inject, ref } from "vue";

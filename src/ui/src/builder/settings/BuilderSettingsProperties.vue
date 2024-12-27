@@ -29,6 +29,7 @@
 					"
 					:hint="fieldValue.desc"
 					:unit="fieldValue.type"
+					:error="computeErrorField(fieldKey)"
 				>
 					<BuilderFieldsColor
 						v-if="fieldValue.type == FieldType.Color"
@@ -53,6 +54,7 @@
 						v-if="fieldValue.type == FieldType.Text"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="computeErrorField(fieldKey)"
 					></BuilderFieldsText>
 
 					<BuilderFieldsText
@@ -126,6 +128,7 @@ import BuilderFieldsText from "./BuilderFieldsText.vue";
 import BuilderFieldsWidth from "./BuilderFieldsWidth.vue";
 import BuilderFieldsTools from "./BuilderFieldsTools.vue";
 import WdsFieldWrapper from "@/wds/WdsFieldWrapper.vue";
+import { useEvaluator } from "@/renderer/useEvaluator";
 
 const wf = inject(injectionKeys.core);
 const ssbm = inject(injectionKeys.builderManager);
@@ -138,11 +141,28 @@ const selectedComponent = computed(() => {
 	return wf.getComponentById(ssbm.getSelectedId());
 });
 
-const fields = computed(() => {
+const componentDefinition = computed(() => {
 	const { type } = selectedComponent.value;
-	const definition = wf.getComponentDefinition(type);
-	return definition.fields;
+	return wf.getComponentDefinition(type);
 });
+const fields = computed(() => {
+	return componentDefinition.value?.fields;
+});
+
+function computeErrorField(fieldKey: string) {
+	const validator = fields.value[fieldKey]?.validator;
+	if (!validator) return undefined;
+
+	const evaluatedField = useEvaluator(wf).getEvaluatedFields(
+		selectedInstancePath.value,
+	);
+
+	return (
+		validator(evaluatedField[fieldKey].value, evaluatedField).errors.join(
+			"\n",
+		) || undefined
+	);
+}
 
 const fieldCategories = computed(() => {
 	return [

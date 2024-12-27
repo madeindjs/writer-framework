@@ -50,13 +50,19 @@ export type InstancePathItem = {
 /**
  * Details the full path, including all ancestors, of a unique instance of a Component.
  */
-
 export type InstancePath = InstancePathItem[];
+
+/**
+ *
+ */
+export type WriterComponentDefinitionFieldValidator = (
+	value: unknown,
+	fields: Record<string, unknown>,
+) => { errors: string[]; valid: boolean };
 
 /**
  * Defines component structure and behaviour. Included in Component templates.
  */
-
 export type WriterComponentDefinitionField = {
 	/** Display name */
 	name: string;
@@ -77,6 +83,10 @@ export type WriterComponentDefinitionField = {
 	category?: FieldCategory;
 	/** Use the value of this field as a CSS variable */
 	applyStyleVariable?: boolean;
+	validator?: (
+		value: unknown,
+		fields: Record<string, unknown>,
+	) => { errors: string[]; valid: boolean };
 };
 
 export type WriterComponentDefinition = {
