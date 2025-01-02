@@ -45,6 +45,7 @@ export default {
 		category: "Content",
 		fields: {
 			spec: {
+				// TODO: load validation https://vega.github.io/schema/vega-lite/v5.json
 				name: "Chart specification",
 				default: JSON.stringify(defaultSpec, null, 2),
 				desc: "Vega-Lite chart specification. Pass a Vega Altair chart using state or paste a JSON specification.",

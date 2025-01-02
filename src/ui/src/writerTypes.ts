@@ -1,6 +1,7 @@
 import type { Component as VueComponent } from "vue";
 import { generateCore } from "./core";
 import { generateBuilderManager } from "./builder/builderManager";
+import type { SchemaObject } from "ajv";
 
 export type Core = ReturnType<typeof generateCore>;
 
@@ -53,14 +54,6 @@ export type InstancePathItem = {
 export type InstancePath = InstancePathItem[];
 
 /**
- *
- */
-export type WriterComponentDefinitionFieldValidator = (
-	value: unknown,
-	fields: Record<string, unknown>,
-) => Iterable<string>;
-
-/**
  * Defines component structure and behaviour. Included in Component templates.
  */
 export type WriterComponentDefinitionField = {
@@ -83,7 +76,7 @@ export type WriterComponentDefinitionField = {
 	category?: FieldCategory;
 	/** Use the value of this field as a CSS variable */
 	applyStyleVariable?: boolean;
-	validator?: WriterComponentDefinitionFieldValidator;
+	validator?: SchemaObject;
 };
 
 export type WriterComponentDefinition = {

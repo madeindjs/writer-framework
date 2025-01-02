@@ -25,6 +25,7 @@ export default {
 				type: FieldType.Text,
 				default: "https://writer.com",
 				desc: "Specify a URL or choose a page. Keep in mind that you can only link to pages for which a key has been specified.",
+				// TODO: build dynamic schema
 				options: (wf: Core) => {
 					return Object.fromEntries(
 						wf

@@ -71,7 +71,14 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs, inject, computed, ref, defineAsyncComponent } from "vue";
+import {
+	toRefs,
+	inject,
+	computed,
+	ref,
+	defineAsyncComponent,
+	PropType,
+} from "vue";
 import { Component } from "@/writerTypes";
 import { useComponentActions } from "../useComponentActions";
 import injectionKeys from "@/injectionKeys";
@@ -137,10 +144,13 @@ const toolFormInitValue = {
 
 const toolForm = ref<ToolForm>(toolFormInitValue);
 
-const props = defineProps<{
-	componentId: Component["id"];
-	fieldKey: string;
-}>();
+const props = defineProps({
+	componentId: { type: String as PropType<Component["id"]>, required: true },
+	fieldKey: { type: String, required: true },
+	// TODO: not used for now
+	error: { type: String, required: false, default: undefined },
+});
+
 const { componentId, fieldKey } = toRefs(props);
 const component = computed(() => wf.getComponentById(componentId.value));
 

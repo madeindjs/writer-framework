@@ -6,6 +6,7 @@
 		variant="code"
 		:value="component.content[fieldKey]"
 		:placeholder="templateField?.default"
+		:error="error"
 		@input="
 			(ev: Event) =>
 				formatAndSetContentValue((ev.target as HTMLInputElement).value)
@@ -15,7 +16,6 @@
 
 <script setup lang="ts">
 import { toRefs, inject, computed } from "vue";
-import { Component } from "@/writerTypes";
 import { useComponentActions } from "../useComponentActions";
 import injectionKeys from "@/injectionKeys";
 import BuilderTemplateInput from "./BuilderTemplateInput.vue";
@@ -24,10 +24,11 @@ const wf = inject(injectionKeys.core);
 const ssbm = inject(injectionKeys.builderManager);
 const { setContentValue } = useComponentActions(wf, ssbm);
 
-const props = defineProps<{
-	componentId: Component["id"];
-	fieldKey: string;
-}>();
+const props = defineProps({
+	componentId: { type: String, required: true },
+	fieldKey: { type: String, required: true },
+	error: { type: String, required: false, default: undefined },
+});
 const { componentId, fieldKey } = toRefs(props);
 const component = computed(() => wf.getComponentById(componentId.value));
 

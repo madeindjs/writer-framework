@@ -9,7 +9,7 @@
 				spellcheck="false"
 				:placeholder="props.placeholder"
 				:list="props.options ? `list-${props.inputId}` : undefined"
-				:invalid="!!error"
+				:invalid="error !== undefined"
 				@input="handleInput"
 				@blur="closeAutocompletion"
 			/>

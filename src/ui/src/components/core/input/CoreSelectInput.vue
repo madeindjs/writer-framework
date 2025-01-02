@@ -31,6 +31,7 @@ import {
 import BaseInputWrapper from "../base/BaseInputWrapper.vue";
 import { ComponentPublicInstance } from "vue";
 import { WdsColor } from "@/wds/tokens";
+import { validatorObjectRecordNotNested } from "@/constants/validators";
 
 const description =
 	"A user input component that allows users to select a single value from a searchable list of options.";
@@ -58,6 +59,7 @@ export default {
 				desc: "Key-value object with options. Must be a JSON string or a state reference to a dictionary.",
 				type: FieldType.KeyValue,
 				default: JSON.stringify(defaultOptions, null, 2),
+				validator: validatorObjectRecordNotNested,
 			},
 			placeholder: {
 				name: "Placeholder",

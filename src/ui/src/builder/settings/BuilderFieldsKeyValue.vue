@@ -54,6 +54,7 @@
 			<BuilderFieldsObject
 				:component-id="component.id"
 				:field-key="fieldKey"
+				:error="error"
 			></BuilderFieldsObject>
 		</template>
 	</div>
@@ -87,6 +88,7 @@ const props = defineProps({
 	componentId: { type: String, required: true },
 	fieldKey: { type: String, required: true },
 	instancePath: { type: Array as PropType<InstancePath>, required: true },
+	error: { type: String, required: false, default: undefined },
 });
 
 const { componentId, fieldKey } = toRefs(props);

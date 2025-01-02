@@ -1,4 +1,8 @@
-import { validatorCssClass } from "@/utils/fieldValidation";
+import {
+	validatorCssClassname,
+	validatorCssSize,
+	validatorEnumYesNo,
+} from "@/constants/validators";
 import {
 	FieldCategory,
 	FieldType,
@@ -81,7 +85,7 @@ export const cssClasses: WriterComponentDefinitionField = {
 	type: FieldType.Text,
 	category: FieldCategory.Style,
 	desc: "CSS classes, separated by spaces. You can define classes in custom stylesheets.",
-	validator: validatorCssClass,
+	validator: validatorCssClassname,
 };
 
 export const contentWidth: WriterComponentDefinitionField = {
@@ -90,6 +94,7 @@ export const contentWidth: WriterComponentDefinitionField = {
 	default: "100%",
 	category: FieldCategory.Style,
 	desc: "Configure content width using CSS units, e.g. 100px, 50%, 10vw, etc.",
+	validator: validatorCssSize,
 };
 
 export const contentHAlign: WriterComponentDefinitionField = {
@@ -115,19 +120,25 @@ export const contentPadding: WriterComponentDefinitionField = {
 
 const yesNoOptions = { yes: "Yes", no: "No" };
 
-export const isCollapsible: WriterComponentDefinitionField = {
-	name: "Collapsible",
+export const partialYesNoField: Pick<
+	WriterComponentDefinitionField,
+	"default" | "type" | "options" | "validator"
+> = {
 	default: "no",
 	type: FieldType.Text,
 	options: yesNoOptions,
+	validator: validatorEnumYesNo,
+};
+
+export const isCollapsible: WriterComponentDefinitionField = {
+	...partialYesNoField,
+	name: "Collapsible",
 	category: FieldCategory.Style,
 };
 
 export const startCollapsed: WriterComponentDefinitionField = {
+	...partialYesNoField,
 	name: "Start collapsed",
-	type: FieldType.Text,
 	category: FieldCategory.Style,
-	default: "no",
-	options: yesNoOptions,
 	desc: "Only applied when the component is collapsible.",
 };

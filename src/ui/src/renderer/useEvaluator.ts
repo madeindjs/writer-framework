@@ -1,11 +1,8 @@
 import { ComputedRef, computed } from "vue";
-import {
-	Component,
-	Core,
-	FieldType,
-	InstancePath,
-	WriterComponentDefinitionFieldValidator,
-} from "@/writerTypes";
+import { Component, Core, FieldType, InstancePath } from "@/writerTypes";
+import Ajv, { SchemaObject } from "ajv";
+import { formatAjvErrors } from "@/utils/fieldValidation";
+import { buildValidatorEnum } from "@/constants/validators";
 
 export function useEvaluator(wf: Core) {
 	const templateRegex = /[\\]?@{([^}]*)}/g;
@@ -226,23 +223,37 @@ export function useEvaluator(wf: Core) {
 
 			const evaluatedFields = getEvaluatedFields(instancePath.value);
 
-			const evaluatedFieldsRaw = Object.entries(evaluatedFields).reduce(
-				(acc, [k, v]) => {
-					acc[k] = v.value;
-					return acc;
-				},
-				{},
-			);
+			// const evaluatedFieldsRaw = Object.entries(evaluatedFields).reduce(
+			// 	(acc, [k, v]) => {
+			// 		acc[k] = v.value;
+			// 		return acc;
+			// 	},
+			// 	{},
+			// );
 
 			return Object.entries(fields).reduce((acc, [key, definition]) => {
-				if (definition.validator === undefined) return acc;
+				let schema = definition.validator;
 
-				const errors = definition.validator(
-					evaluatedFields[key].value,
-					evaluatedFieldsRaw,
-				);
+				if (schema === undefined && definition.options !== undefined) {
+					// set an automatic enum schema for options fields
+					schema = {
+						type: "string",
+						enum: Object.keys(definition.options),
+					};
+				}
 
-				acc[key] = Array.from(errors).join("\n");
+				if (schema === undefined) return acc;
+				console.log("validate", key, evaluatedFields[key].value);
+
+				const ajv = new Ajv();
+				const validate = ajv.compile(schema);
+
+				const valid = validate(evaluatedFields[key].value);
+
+				if (valid || validate.errors === undefined) return acc;
+
+				acc[key] = formatAjvErrors(validate.errors);
+				console.log("validate errors", acc[key]);
 
 				return acc;
 			}, {});

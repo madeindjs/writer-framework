@@ -35,12 +35,14 @@
 						v-if="fieldValue.type == FieldType.Color"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsColor>
 
 					<BuilderFieldsShadow
 						v-if="fieldValue.type == FieldType.Shadow"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsShadow>
 
 					<BuilderFieldsKeyValue
@@ -48,6 +50,7 @@
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
 						:instance-path="selectedInstancePath"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsKeyValue>
 
 					<BuilderFieldsText
@@ -61,24 +64,28 @@
 						v-if="fieldValue.type == FieldType.Number"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsText>
 
 					<BuilderFieldsText
 						v-if="fieldValue.type == FieldType.IdKey"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsText>
 
 					<BuilderFieldsObject
 						v-if="fieldValue.type == FieldType.Object"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsObject>
 
 					<BuilderFieldsWidth
 						v-if="fieldValue.type == FieldType.Width"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsWidth>
 
 					<BuilderFieldsAlign
@@ -86,6 +93,7 @@
 						direction="horizontal"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsAlign>
 
 					<BuilderFieldsAlign
@@ -93,18 +101,21 @@
 						direction="vertical"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsAlign>
 
 					<BuilderFieldsPadding
 						v-if="fieldValue.type == FieldType.Padding"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					></BuilderFieldsPadding>
 
 					<BuilderFieldsTools
 						v-if="fieldValue.type == FieldType.Tools"
 						:field-key="fieldKey"
 						:component-id="selectedComponent.id"
+						:error="errorsByFields[fieldKey]"
 					>
 					</BuilderFieldsTools>
 				</WdsFieldWrapper>
@@ -148,19 +159,6 @@ const componentDefinition = computed(() => {
 const fields = computed(() => {
 	return componentDefinition.value?.fields;
 });
-
-function computeErrorField(fieldKey: string) {
-	const validator = fields.value[fieldKey]?.validator;
-	if (!validator) return undefined;
-
-	const evaluatedField = useEvaluator(wf).getEvaluatedFields(
-		selectedInstancePath.value,
-	);
-
-	return validator(evaluatedField[fieldKey].value, evaluatedField)?.join(
-		"\n",
-	);
-}
 
 const errorsByFields = useEvaluator(wf).useFieldsError(selectedInstancePath);
 
