@@ -30,6 +30,7 @@ import {
 	FieldType,
 	WriterComponentDefinition,
 } from "@/writerTypes";
+import { validatorAlignement, validatorYesNo } from "@/utils/fieldValidation";
 
 const clickHandlerStub = `
 def click_handler(state):
@@ -62,15 +63,7 @@ const definition: WriterComponentDefinition = {
 				yes: "Yes",
 				no: "No",
 			},
-			validator(value: string) {
-				const errors = [];
-				console.log(value);
-				if (value && !["yes", "no"].includes(value)) {
-					errors.push('The value need to be "yes" or "no"');
-				}
-
-				return errors;
-			},
+			validator: validatorYesNo,
 		},
 		alignment: {
 			name: "Alignment",
@@ -82,6 +75,7 @@ const definition: WriterComponentDefinition = {
 				right: "Right",
 			},
 			category: FieldCategory.Style,
+			validator: validatorAlignement,
 		},
 		primaryTextColor,
 		cssClasses,

@@ -235,9 +235,15 @@ export function useEvaluator(wf: Core) {
 			);
 
 			return Object.entries(fields).reduce((acc, [key, definition]) => {
-				acc[key] = definition
-					.validator?.(evaluatedFields[key].value, evaluatedFieldsRaw)
-					?.join("\n");
+				if (definition.validator === undefined) return acc;
+
+				const errors = definition.validator(
+					evaluatedFields[key].value,
+					evaluatedFieldsRaw,
+				);
+
+				acc[key] = Array.from(errors).join("\n");
+
 				return acc;
 			}, {});
 		});

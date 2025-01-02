@@ -58,7 +58,7 @@ export type InstancePath = InstancePathItem[];
 export type WriterComponentDefinitionFieldValidator = (
 	value: unknown,
 	fields: Record<string, unknown>,
-) => string[];
+) => Iterable<string>;
 
 /**
  * Defines component structure and behaviour. Included in Component templates.

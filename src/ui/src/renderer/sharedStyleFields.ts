@@ -1,3 +1,4 @@
+import { validatorCssClass } from "@/utils/fieldValidation";
 import {
 	FieldCategory,
 	FieldType,
@@ -80,6 +81,7 @@ export const cssClasses: WriterComponentDefinitionField = {
 	type: FieldType.Text,
 	category: FieldCategory.Style,
 	desc: "CSS classes, separated by spaces. You can define classes in custom stylesheets.",
+	validator: validatorCssClass,
 };
 
 export const contentWidth: WriterComponentDefinitionField = {
