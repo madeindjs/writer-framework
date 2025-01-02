@@ -109,3 +109,8 @@ export const validatorPositiveNumber: SchemaObject = {
 	type: "number",
 	minimum: 0,
 };
+
+export const validatorUri = {
+	type: "string",
+	format: "uri",
+};

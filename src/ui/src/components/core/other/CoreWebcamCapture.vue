@@ -38,6 +38,7 @@ import {
 } from "@/renderer/sharedStyleFields";
 import WdsButton from "@/wds/WdsButton.vue";
 import WdsDropdownInput from "@/wds/WdsDropdownInput.vue";
+import { validatorPositiveNumber } from "@/constants/validators";
 
 const description =
 	"A user input component that allows users to capture images using their webcam.";
@@ -69,6 +70,7 @@ export default {
 				default: "200",
 				desc: "Set to 0 for manual capture.",
 				type: FieldType.Number,
+				validator: validatorPositiveNumber,
 			},
 			buttonColor,
 			buttonTextColor,

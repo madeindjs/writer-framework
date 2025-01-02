@@ -40,6 +40,7 @@ export default {
 		description,
 		category: "Content",
 		fields: {
+			// TODO: validate
 			tags: {
 				name: "Tags",
 				desc: "Key-value object with tags. Must be a JSON string or a state reference to a dictionary.",
