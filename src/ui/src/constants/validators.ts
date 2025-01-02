@@ -104,3 +104,8 @@ export const validatorChatBotMessages: SchemaObject = {
 	type: "array",
 	items: validatorChatBotMessage,
 };
+
+export const validatorPositiveNumber: SchemaObject = {
+	type: "number",
+	minimum: 0,
+};

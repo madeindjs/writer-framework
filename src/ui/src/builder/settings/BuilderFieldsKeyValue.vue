@@ -13,7 +13,10 @@
 		/>
 
 		<template v-if="mode == 'assisted'">
-			<div class="staticList">
+			<div
+				class="staticList"
+				:class="{ 'staticList--invalid': error !== undefined }"
+			>
 				<div
 					v-for="(entryValue, entryKey) in assistedEntries"
 					:key="entryKey"
@@ -79,6 +82,7 @@ import BuilderFieldsObject from "./BuilderFieldsObject.vue";
 import BuilderTemplateInput from "./BuilderTemplateInput.vue";
 import { useComponentActions } from "../useComponentActions";
 import WdsTabs, { WdsTabOptions } from "@/wds/WdsTabs.vue";
+import { error } from "ajv/dist/vocabularies/applicator/dependencies";
 
 const wf = inject(injectionKeys.core);
 const ssbm = inject(injectionKeys.builderManager);
@@ -193,6 +197,9 @@ onMounted(async () => {
 	padding: 8.5px 12px 8.5px 12px;
 	border: 1px solid var(--builderSeparatorColor);
 	border-radius: 8px;
+}
+.staticList--invalid {
+	border-color: var(--wdsColorOrange5);
 }
 
 .staticList:empty::before {

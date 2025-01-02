@@ -1,11 +1,20 @@
 import type { ErrorObject } from "ajv";
 
 function formatAjvError(error: ErrorObject): string {
-	if (Array.isArray(error.params?.allowedValues)) {
-		return `${error.message}: ${error.params.allowedValues}`;
+	console.log("##formatAjvError", error);
+	let message = "";
+
+	if (error.instancePath) {
+		message += `${error.instancePath} `;
 	}
 
-	return error.message;
+	message += error.message;
+
+	if (Array.isArray(error.params?.allowedValues)) {
+		message += `: ${error.params.allowedValues}`;
+	}
+
+	return message;
 }
 export function formatAjvErrors(errors: ErrorObject[]): string {
 	return errors.map(formatAjvError).join("\n");
