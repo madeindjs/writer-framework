@@ -8,7 +8,7 @@ function generateSchemaId(path: string) {
 	return `https://dev.writer.com/framework/${encodeURIComponent(path)}.json`;
 }
 
-export function buildValidatorEnum(options: string[]): SchemaObject {
+export function buildJsonSchemaForEnum(options: string[]): SchemaObject {
 	return {
 		$id: generateSchemaId(options.join(",")),
 		type: "string",
@@ -16,7 +16,7 @@ export function buildValidatorEnum(options: string[]): SchemaObject {
 	};
 }
 
-export function buildValidatorNumberBetween(
+export function buildJsonSchemaForNumberBetween(
 	minimum: number,
 	maximum: number,
 ): SchemaObject {
@@ -41,7 +41,7 @@ export const validatorCssSize: SchemaObject = {
 		"(^([+-]?\\d*\\.?\\d+)(px|em|%|vh|vw|rem|pt|pc|in|cm|mm|ex|ch|vmin|vmax|fr)$)|(^$)",
 };
 
-export const validatorEnumYesNo: SchemaObject = buildValidatorEnum([
+export const validatorEnumYesNo: SchemaObject = buildJsonSchemaForEnum([
 	"yes",
 	"no",
 ]);
@@ -52,9 +52,9 @@ export const validatorArrayOfString: SchemaObject = {
 	items: { type: "string" },
 };
 
-export const validatorGpsLat = buildValidatorNumberBetween(-90, 90);
+export const validatorGpsLat = buildJsonSchemaForNumberBetween(-90, 90);
 
-export const validatorGpsLng = buildValidatorNumberBetween(-180, 180);
+export const validatorGpsLng = buildJsonSchemaForNumberBetween(-180, 180);
 
 export const validatorGpsMarker: SchemaObject = {
 	$id: generateSchemaId("gpsMarker"),

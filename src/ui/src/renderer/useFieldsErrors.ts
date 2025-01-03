@@ -6,7 +6,7 @@ import type {
 import { computed, ComputedRef } from "vue";
 import { useEvaluator } from "./useEvaluator";
 import {
-	buildValidatorEnum,
+	buildJsonSchemaForEnum,
 	getJsonSchemaValidator,
 } from "@/constants/validators";
 import type { ErrorObject } from "ajv";
@@ -49,7 +49,7 @@ function computeFieldErrors(
 
 	if (schema === undefined && field.options !== undefined) {
 		// set an automatic enum schema for options fields
-		schema = buildValidatorEnum(Object.keys(field.options));
+		schema = buildJsonSchemaForEnum(Object.keys(field.options));
 	}
 
 	if (schema === undefined) return undefined;
