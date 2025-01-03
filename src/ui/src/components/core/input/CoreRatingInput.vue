@@ -58,7 +58,7 @@ import {
 } from "@/renderer/sharedStyleFields";
 import BaseInputWrapper from "../base/BaseInputWrapper.vue";
 import { ComponentPublicInstance } from "vue";
-import { validatorPositiveNumber } from "@/constants/validators";
+import { buildValidatorNumberBetween } from "@/constants/validators";
 
 const description =
 	"A user input component that allows users to provide a rating.";
@@ -96,33 +96,21 @@ export default {
 				type: FieldType.Number,
 				default: "1",
 				desc: "Valid values are 0 and 1.",
-				validator: {
-					type: "number",
-					minimum: 0,
-					maximum: 1,
-				},
+				validator: buildValidatorNumberBetween(0, 1),
 			},
 			maxValue: {
 				name: "Max value",
 				type: FieldType.Number,
 				default: "5",
 				desc: "Valid values are between 2 and 11.",
-				validator: {
-					type: "number",
-					minimum: 2,
-					maximum: 11,
-				},
+				validator: buildValidatorNumberBetween(2, 11),
 			},
 			valueStep: {
 				name: "Step",
 				type: FieldType.Number,
 				default: "1",
 				desc: "Valid values are between 0.25 and 1.",
-				validator: {
-					type: "number",
-					minimum: 0.25,
-					maximum: 1,
-				},
+				validator: buildValidatorNumberBetween(0.25, 1),
 			},
 			accentColor,
 			primaryTextColor,

@@ -3,9 +3,13 @@ import type {
 	InstancePath,
 	WriterComponentDefinitionField,
 } from "@/writerTypes";
-import Ajv, { ErrorObject } from "ajv";
 import { computed, ComputedRef } from "vue";
 import { useEvaluator } from "./useEvaluator";
+import {
+	buildValidatorEnum,
+	getJsonSchemaValidator,
+} from "@/constants/validators";
+import type { ErrorObject } from "ajv";
 
 export function useFieldsErrors(
 	wf: Core,
@@ -45,16 +49,12 @@ function computeFieldErrors(
 
 	if (schema === undefined && field.options !== undefined) {
 		// set an automatic enum schema for options fields
-		schema = {
-			type: "string",
-			enum: Object.keys(field.options),
-		};
+		schema = buildValidatorEnum(Object.keys(field.options));
 	}
 
 	if (schema === undefined) return undefined;
 
-	const ajv = new Ajv();
-	const validate = ajv.compile(schema);
+	const validate = getJsonSchemaValidator(schema);
 
 	const valid = validate(value);
 
