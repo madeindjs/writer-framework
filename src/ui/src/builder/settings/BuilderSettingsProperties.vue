@@ -139,7 +139,7 @@ import BuilderFieldsText from "./BuilderFieldsText.vue";
 import BuilderFieldsWidth from "./BuilderFieldsWidth.vue";
 import BuilderFieldsTools from "./BuilderFieldsTools.vue";
 import WdsFieldWrapper from "@/wds/WdsFieldWrapper.vue";
-import { useEvaluator } from "@/renderer/useEvaluator";
+import { useFieldsErrors } from "@/renderer/useFieldsErrors";
 
 const wf = inject(injectionKeys.core);
 const ssbm = inject(injectionKeys.builderManager);
@@ -160,7 +160,7 @@ const fields = computed(() => {
 	return componentDefinition.value?.fields;
 });
 
-const errorsByFields = useEvaluator(wf).useFieldsError(selectedInstancePath);
+const errorsByFields = useFieldsErrors(wf, selectedInstancePath);
 
 const fieldCategories = computed(() => {
 	return [

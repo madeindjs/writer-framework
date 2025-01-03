@@ -1,8 +1,5 @@
 import { ComputedRef, computed } from "vue";
 import { Component, Core, FieldType, InstancePath } from "@/writerTypes";
-import Ajv, { SchemaObject } from "ajv";
-import { formatAjvErrors } from "@/utils/fieldValidation";
-import { buildValidatorEnum } from "@/constants/validators";
 
 export function useEvaluator(wf: Core) {
 	const templateRegex = /[\\]?@{([^}]*)}/g;
@@ -20,7 +17,7 @@ export function useEvaluator(wf: Core) {
 			s = "";
 		let level = 0;
 
-		let i = 0;
+		let i = 0
 		while (i < expr.length) {
 			const c = expr.charAt(i);
 			if (c == "\\") {
@@ -54,7 +51,7 @@ export function useEvaluator(wf: Core) {
 				s += c;
 			}
 
-			i++;
+			i++
 		}
 
 		if (s) {
@@ -145,15 +142,11 @@ export function useEvaluator(wf: Core) {
 		return evaluatedTemplate;
 	}
 
-	function getComponentFromInstancePath(instancePath: InstancePath) {
-		const { componentId } = instancePath.at(-1);
-		return wf.getComponentById(componentId);
-	}
-
 	function getEvaluatedFields(
 		instancePath: InstancePath,
 	): Record<string, ComputedRef<any>> {
-		const component = getComponentFromInstancePath(instancePath);
+		const { componentId } = instancePath.at(-1);
+		const component = wf.getComponentById(componentId);
 		if (!component) return;
 		const evaluatedFields: Record<string, ComputedRef<any>> = {};
 		const { fields } = wf.getComponentDefinition(component.type);
@@ -180,11 +173,7 @@ export function useEvaluator(wf: Core) {
 			typeof evaluated == "undefined" ||
 			evaluated === null ||
 			evaluated === "";
-		if (
-			fieldType == FieldType.Object ||
-			fieldType == FieldType.KeyValue ||
-			fieldType == FieldType.Tools
-		) {
+		if (fieldType == FieldType.Object || fieldType == FieldType.KeyValue || fieldType == FieldType.Tools) {
 			if (!evaluated) {
 				return JSON.parse(defaultValue ?? null);
 			}
@@ -211,53 +200,6 @@ export function useEvaluator(wf: Core) {
 			if (isValueEmpty) return defaultValue ?? "";
 			return evaluated;
 		}
-	}
-
-	function useFieldsError(instancePath: ComputedRef<InstancePath>) {
-		return computed(() => {
-			const component = getComponentFromInstancePath(instancePath.value);
-			if (!component) return {};
-
-			const fields = wf.getComponentDefinition(component.type).fields;
-			if (!fields) return {};
-
-			const evaluatedFields = getEvaluatedFields(instancePath.value);
-
-			// const evaluatedFieldsRaw = Object.entries(evaluatedFields).reduce(
-			// 	(acc, [k, v]) => {
-			// 		acc[k] = v.value;
-			// 		return acc;
-			// 	},
-			// 	{},
-			// );
-
-			return Object.entries(fields).reduce((acc, [key, definition]) => {
-				let schema = definition.validator;
-
-				if (schema === undefined && definition.options !== undefined) {
-					// set an automatic enum schema for options fields
-					schema = {
-						type: "string",
-						enum: Object.keys(definition.options),
-					};
-				}
-
-				if (schema === undefined) return acc;
-				console.log("validate", key, evaluatedFields[key].value);
-
-				const ajv = new Ajv();
-				const validate = ajv.compile(schema);
-
-				const valid = validate(evaluatedFields[key].value);
-
-				if (valid || validate.errors === undefined) return acc;
-
-				acc[key] = formatAjvErrors(validate.errors);
-				console.log("validate errors", acc[key]);
-
-				return acc;
-			}, {});
-		});
 	}
 
 	/**
@@ -289,6 +231,5 @@ export function useEvaluator(wf: Core) {
 		getEvaluatedFields,
 		isComponentVisible,
 		evaluateExpression,
-		useFieldsError,
 	};
 }
