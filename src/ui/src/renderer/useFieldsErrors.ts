@@ -1,4 +1,8 @@
-import type { Core, InstancePath } from "@/writerTypes";
+import type {
+	Core,
+	InstancePath,
+	WriterComponentDefinitionField,
+} from "@/writerTypes";
 import Ajv, { ErrorObject } from "ajv";
 import { computed, ComputedRef } from "vue";
 import { useEvaluator } from "./useEvaluator";
@@ -24,32 +28,39 @@ export function useFieldsErrors(
 	return computed(() => {
 		return Object.entries(componentFields.value).reduce(
 			(acc, [key, definition]) => {
-				let schema = definition.validator;
-
-				if (schema === undefined && definition.options !== undefined) {
-					// set an automatic enum schema for options fields
-					schema = {
-						type: "string",
-						enum: Object.keys(definition.options),
-					};
-				}
-
-				if (schema === undefined) return acc;
-
-				const ajv = new Ajv();
-				const validate = ajv.compile(schema);
-
-				const valid = validate(evaluatedFields.value[key].value);
-
-				if (valid || validate.errors === undefined) return acc;
-
-				acc[key] = formatAjvErrors(validate.errors);
-
+				const value = evaluatedFields.value[key].value;
+				acc[key] = computeFieldErrors(definition, value);
 				return acc;
 			},
 			{},
 		);
 	});
+}
+
+function computeFieldErrors(
+	field: WriterComponentDefinitionField,
+	value: unknown,
+) {
+	let schema = field.validator;
+
+	if (schema === undefined && field.options !== undefined) {
+		// set an automatic enum schema for options fields
+		schema = {
+			type: "string",
+			enum: Object.keys(field.options),
+		};
+	}
+
+	if (schema === undefined) return undefined;
+
+	const ajv = new Ajv();
+	const validate = ajv.compile(schema);
+
+	const valid = validate(value);
+
+	if (valid || validate.errors === undefined) return undefined;
+
+	return formatAjvErrors(validate.errors);
 }
 
 function formatAjvError(error: ErrorObject): string {
