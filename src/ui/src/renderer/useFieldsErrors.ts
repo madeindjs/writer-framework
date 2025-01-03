@@ -9,43 +9,46 @@ export function useFieldsErrors(
 ) {
 	const { getEvaluatedFields } = useEvaluator(wf);
 
-	const component = computed(() => {
+	const componentFields = computed(() => {
 		const { componentId } = instancePath.value.at(-1);
-		return wf.getComponentById(componentId);
+		const component = wf.getComponentById(componentId);
+		if (!component) return {};
+
+		return wf.getComponentDefinition(component.type).fields ?? {};
 	});
 
+	const evaluatedFields = computed(() =>
+		getEvaluatedFields(instancePath.value),
+	);
+
 	return computed(() => {
-		if (!component.value) return {};
+		return Object.entries(componentFields.value).reduce(
+			(acc, [key, definition]) => {
+				let schema = definition.validator;
 
-		const fields = wf.getComponentDefinition(component.value.type).fields;
-		if (!fields) return {};
+				if (schema === undefined && definition.options !== undefined) {
+					// set an automatic enum schema for options fields
+					schema = {
+						type: "string",
+						enum: Object.keys(definition.options),
+					};
+				}
 
-		const evaluatedFields = getEvaluatedFields(instancePath.value);
+				if (schema === undefined) return acc;
 
-		return Object.entries(fields).reduce((acc, [key, definition]) => {
-			let schema = definition.validator;
+				const ajv = new Ajv();
+				const validate = ajv.compile(schema);
 
-			if (schema === undefined && definition.options !== undefined) {
-				// set an automatic enum schema for options fields
-				schema = {
-					type: "string",
-					enum: Object.keys(definition.options),
-				};
-			}
+				const valid = validate(evaluatedFields.value[key].value);
 
-			if (schema === undefined) return acc;
+				if (valid || validate.errors === undefined) return acc;
 
-			const ajv = new Ajv();
-			const validate = ajv.compile(schema);
+				acc[key] = formatAjvErrors(validate.errors);
 
-			const valid = validate(evaluatedFields[key].value);
-
-			if (valid || validate.errors === undefined) return acc;
-
-			acc[key] = formatAjvErrors(validate.errors);
-
-			return acc;
-		}, {});
+				return acc;
+			},
+			{},
+		);
 	});
 }
 
