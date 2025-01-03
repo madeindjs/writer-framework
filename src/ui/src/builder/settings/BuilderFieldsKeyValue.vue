@@ -82,7 +82,6 @@ import BuilderFieldsObject from "./BuilderFieldsObject.vue";
 import BuilderTemplateInput from "./BuilderTemplateInput.vue";
 import { useComponentActions } from "../useComponentActions";
 import WdsTabs, { WdsTabOptions } from "@/wds/WdsTabs.vue";
-import { error } from "ajv/dist/vocabularies/applicator/dependencies";
 
 const wf = inject(injectionKeys.core);
 const ssbm = inject(injectionKeys.builderManager);

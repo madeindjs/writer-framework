@@ -23,7 +23,7 @@
 						ref="fixedEl"
 						type="number"
 						:model-value="valuePickFixed"
-						:invalid="!!error"
+						:invalid="error !== undefined"
 						@update:model-value="handleInputFixed"
 					/>
 					<div>px</div>

@@ -79,6 +79,10 @@ export default {
 			orientation: {
 				name: "Orientation",
 				type: FieldType.Text,
+				options: {
+					vertical: "Vertical",
+					horizontal: "Horizontal",
+				},
 				default: "vertical",
 				category: FieldCategory.Style,
 				desc: "Specify how to lay out the options.",
