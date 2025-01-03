@@ -20,7 +20,7 @@ import { ComponentPublicInstance } from "vue";
 import { accentColor, cssClasses } from "@/renderer/sharedStyleFields";
 import { FieldCategory, FieldType } from "@/writerTypes";
 import BaseInputWrapper from "../base/BaseInputWrapper.vue";
-import { validatorPositiveNumber } from "../../../constants/validators";
+import { validatorPositiveNumber } from "@/constants/validators";
 
 const description =
 	"A user input component that allows users to select numeric values range using a range slider with optional constraints like min, max, and step.";

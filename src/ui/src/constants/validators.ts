@@ -1,8 +1,8 @@
 import { Ajv, type SchemaObject } from "ajv";
 
 /**
- * We use an URL to define the `$id` of the schema. The URL doesn't have to exists, it's only used for caching
- * https://ajv.js.org/guide/managing-schemas.html#cache-key-schema-vs-key-vs-id
+ * We use an URL to define the `$id` of the schema. The URL doesn't have to exist, it's only used for caching.
+ * @see <https://ajv.js.org/guide/managing-schemas.html#cache-key-schema-vs-key-vs-id>
  */
 function generateSchemaId(path: string) {
 	return `https://dev.writer.com/framework/${encodeURIComponent(path)}.json`;
@@ -140,7 +140,10 @@ export const validatorUri = {
 	format: "uri",
 };
 
-export const ajv = new Ajv();
+export const ajv = new Ajv({
+	strict: true,
+	allowUnionTypes: true,
+});
 
 /**
  * Compile and cache schema on demand

@@ -73,7 +73,7 @@
 
 <script lang="ts">
 import { FieldType } from "@/writerTypes";
-import { validatorPositiveNumber } from "../../../constants/validators";
+import { validatorPositiveNumber } from "@/constants/validators";
 
 const pageChangeStub = `
 def handle_page_change(state, payload):
