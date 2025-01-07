@@ -2,6 +2,7 @@
 	<div
 		v-if="leftIcon"
 		class="WdsTextInput WdsTextInput--leftIcon colorTransformer"
+		:class="{ 'WdsTextInput--ghost': variant === 'ghost' }"
 		v-bind="$attrs"
 		@click="input.focus()"
 	>
@@ -14,11 +15,12 @@
 		ref="input"
 		v-model="model"
 		class="WdsTextInput colorTransformer"
+		:class="{ 'WdsTextInput--ghost': variant === 'ghost' }"
 	/>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { PropType, ref } from "vue";
 
 const model = defineModel({ type: String });
 
@@ -27,6 +29,7 @@ defineOptions({ inheritAttrs: false });
 
 defineProps({
 	leftIcon: { type: String, required: false, default: undefined },
+	variant: { type: String as PropType<"ghost">, default: undefined },
 });
 
 defineExpose({
@@ -77,6 +80,19 @@ function focus() {
 .WdsTextInput--leftIcon:focus-within {
 	border: 1px solid var(--softenedAccentColor);
 	box-shadow: 0px 0px 0px 3px rgba(81, 31, 255, 0.05);
+}
+
+.WdsTextInput--ghost {
+	border-color: transparent;
+}
+.WdsTextInput--ghost:hover {
+	background-color: var(--wdsColorGray1);
+}
+.WdsTextInput--ghost:focus,
+.WdsTextInput--ghost:focus-within {
+	background-color: var(--wdsColorGray1);
+	border-color: transparent;
+	box-shadow: unset;
 }
 
 .WdsTextInput--leftIcon {
