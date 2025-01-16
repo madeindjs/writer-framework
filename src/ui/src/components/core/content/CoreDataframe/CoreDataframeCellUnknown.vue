@@ -17,9 +17,13 @@ const text = computed(() => JSON.stringify(props.value, bigIntReplacer));
 
 <style scoped>
 .CoreDataframeCellUnknown {
+	width: 100%;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
 	display: inline-block;
+
+	border: 1px solid transparent;
+	padding: 8.5px 12px 8.5px 12px;
 }
 </style>

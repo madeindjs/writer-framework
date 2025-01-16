@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
+import WdsTextInput from "@/wds/WdsTextInput.vue";
+import { ref } from "vue";
 
 const props = defineProps({
 	value: {
@@ -13,20 +14,9 @@ const emits = defineEmits({
 	change: (value: string) => typeof value === "string",
 });
 
-const wrapper = ref<HTMLDivElement | undefined>();
 const input = ref<HTMLTextAreaElement | undefined>();
-const isEditing = ref(false);
 
-async function startEditing() {
-	if (!props.editable) return false;
-	isEditing.value = true;
-	// focus on the input when it renders
-	await nextTick();
-	input.value.focus();
-}
-
-function stopEditing() {
-	isEditing.value = false;
+function onChange() {
 	const newValue = Number(input.value.value);
 	if (newValue === props.value) return;
 	emits("change", input.value.value);
@@ -34,40 +24,38 @@ function stopEditing() {
 </script>
 
 <template>
-	<div
-		ref="wrapper"
-		class="CoreDataframeCellNumber"
-		:class="{ 'CoreDataframeCellNumber--editable': editable }"
-		:tabindex="editable && !isEditing ? 0 : -1"
-		@focusin="startEditing"
-		@click="startEditing"
-	>
-		<input
-			v-if="isEditing"
-			ref="input"
-			type="number"
-			:value="value"
-			@focusout="stopEditing"
-		/>
-		<template v-else>
-			{{ value }}
-		</template>
+	<!-- TODO: introduce `<WdsNumberInput />`-->
+	<WdsTextInput
+		v-if="editable"
+		ref="input"
+		class="CoreDataframeCellNumber--input"
+		type="number"
+		:model-value="String(value)"
+		@focusout="onChange"
+	/>
+	<div v-else class="CoreDataframeCellNumber--text">
+		{{ value }}
 	</div>
 </template>
 
 <style scoped>
-.CoreDataframeCellNumber--editable {
-	cursor: pointer;
-}
-.CoreDataframeCellNumber input {
+.CoreDataframeCellNumber--input,
+.CoreDataframeCellNumber--text {
 	width: 100%;
 	font-size: 0.75rem;
-
-	border: unset;
-	resize: vertical;
 }
-.CoreDataframeCellNumber input:focus {
+
+.CoreDataframeCellNumber--input {
+	resize: vertical;
+	background-color: var(--wdsColorWhite);
+}
+.CoreDataframeCellNumber--input:focus {
 	border: unset;
 	outline: 1px solid var(--accentColor);
+}
+
+.CoreDataframeCellNumber--text {
+	border: 1px solid transparent;
+	padding: 8.5px 12px 8.5px 12px;
 }
 </style>

@@ -39,6 +39,8 @@ function onChange(event: InputEvent) {
 	display: flex;
 	gap: 8px;
 	align-items: center;
+	border: 1px solid transparent;
+	padding: 8.5px 12px 8.5px 12px;
 }
 .CoreDataframeCellBoolean input {
 	cursor: pointer;
