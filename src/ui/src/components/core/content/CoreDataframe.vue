@@ -52,22 +52,21 @@
 						:data-writer-grid-col="
 							columnPosition + (isIndexShown ? 1 : 0)
 						"
-						class="CoreDataframe__table__th CoreDataframe__table__th--header"
+						class="CoreDataframe__table__th"
 						@click="handleSetOrder($event, columnName)"
 					>
-						<div class="name">
+						<div class="CoreDataframe__table__th__name">
 							{{ columnName }}
 						</div>
-						<div
-							v-show="orderSetting?.columnName == columnName"
-							class="icon"
-						>
-							<span class="material-symbols-outlined">{{
+						<span
+							v-if="orderSetting?.columnName == columnName"
+							class="CoreDataframe__table__th__icon material-symbols-outlined"
+							>{{
 								orderSetting?.descending
-									? "arrow_upward"
-									: "arrow_downward"
-							}}</span>
-						</div>
+									? "arrow_drop_up"
+									: "arrow_drop_down"
+							}}</span
+						>
 						<div class="widthAdjuster"></div>
 					</div>
 					<div
@@ -75,7 +74,6 @@
 						class="CoreDataframe__table__th CoreDataframe__table__th--stickyRight"
 					>
 						<div class="name">Actions</div>
-						<div class="widthAdjuster"></div>
 					</div>
 				</div>
 
@@ -776,18 +774,20 @@ onUnmounted(() => {
 	box-shadow: var(--wdsShadowMenu);
 }
 
-.CoreDataframe__table__th .name {
+.CoreDataframe__table__th__name {
 	/* padding: 8px; */
-	flex: 1 1 auto;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.CoreDataframe__table__th .icon {
-	flex: 0 0 auto;
+.CoreDataframe__table__th__icon {
 	display: flex;
 	align-items: center;
-	visibility: hidden;
+	justify-content: center;
+	height: 18px;
+	width: 18px;
+	border-radius: 50%;
+	background-color: var(--wdsColorGray1);
 }
 
 .CoreDataframe__table__th .widthAdjuster {
