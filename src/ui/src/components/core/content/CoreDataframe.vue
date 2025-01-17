@@ -96,6 +96,7 @@
 						slicedTable.indices[rowNumber] ??
 						indexColumnNames.map((c) => row[c]).join(', ')
 					"
+					:display-shadow-on-sticky="displayShadowOnSticky"
 					@action="handleActionRow"
 					@change="handleUpdateCell"
 				/>
@@ -456,12 +457,32 @@ const endpointStyle = computed(() => {
 	};
 });
 
+const displayShadowOnSticky = ref(false);
+
+function refreshDisplayShadowOnSticky() {
+	const hasScroll =
+		gridContainerEl.value.scrollWidth > gridContainerEl.value.clientWidth;
+
+	if (!hasScroll) {
+		displayShadowOnSticky.value = false;
+		return;
+	}
+
+	const isScrolledToRight =
+		gridContainerEl.value.scrollLeft + gridContainerEl.value.clientWidth >=
+		gridContainerEl.value.scrollWidth;
+
+	displayShadowOnSticky.value = !isScrolledToRight;
+}
+watch(columnWidths, refreshDisplayShadowOnSticky);
+
 function handleScroll() {
 	const scrollTop = gridContainerEl.value.scrollTop;
 	relativePosition.value =
 		scrollTop /
 		(gridContainerEl.value.scrollHeight -
 			gridContainerEl.value.clientHeight);
+	refreshDisplayShadowOnSticky();
 }
 
 function resetScroll() {

@@ -32,7 +32,13 @@
 				"
 			/>
 		</div>
-		<div v-if="hasActions" class="CoreDataframeRow__options">
+		<div
+			v-if="hasActions"
+			class="CoreDataframeRow__options"
+			:class="{
+				'CoreDataframeRow__options--shadow': displayShadowOnSticky,
+			}"
+		>
 			<div class="CoreDataframeRow__options__wrapper">
 				<BaseDropdown
 					:options="actions"
@@ -62,6 +68,7 @@ const props = defineProps({
 		type: Object as PropType<Record<string, string>>,
 		required: true,
 	},
+	displayShadowOnSticky: { type: Boolean },
 });
 
 defineEmits({
@@ -119,9 +126,12 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	position: sticky;
 	right: 0px;
 	background-color: var(--dataframeBackgroundColor);
-	box-shadow: var(--wdsShadowMenu);
 	z-index: 3;
 	min-width: unset;
+	border-left: 1px solid var(--separatorColor);
+}
+.CoreDataframeRow__options--shadow {
+	box-shadow: var(--wdsShadowMenu);
 }
 .CoreDataframeRow__options__wrapper {
 	height: 100%;
