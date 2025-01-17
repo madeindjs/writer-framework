@@ -81,6 +81,14 @@ onUnmounted(() => window.removeEventListener("scroll", closePopover));
 .BaseDropdown {
 	position: relative;
 }
+.BaseDropdown__trigger {
+	border-color: transparent;
+	background-color: transparent;
+}
+.BaseDropdown__trigger:focus {
+	background-color: transparent;
+	border-color: transparent;
+}
 
 .BaseDropdown__dropdown {
 	position: absolute;

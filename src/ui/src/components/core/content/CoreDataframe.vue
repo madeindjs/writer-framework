@@ -72,11 +72,8 @@
 					<div
 						v-if="hasActions"
 						class="CoreDataframe__table__th CoreDataframe__table__th--stickyRight"
-					>
-						<div class="name">Actions</div>
-					</div>
+					></div>
 				</div>
-
 				<CoreDataframeRow
 					v-for="(row, rowNumber) in slicedTable?.data"
 					:key="rowNumber"
@@ -318,7 +315,7 @@ import type { Table } from "apache-arrow";
  * to prevent filling the DOM with unnecessary rows.
  */
 const MASSIVE_ROW_COUNT = 1000;
-const ROW_HEIGHT_PX = 36; // Must match CSS
+const ROW_HEIGHT_PX = 48; // Must match CSS
 const ROW_ADD_RECORD_HEIGHT_PX = 58;
 const MIN_COLUMN_WIDTH_PX = 80;
 const MAX_COLUMN_AUTO_WIDTH_PX = 300;
@@ -423,16 +420,14 @@ const gridTemplateColumns = computed(() => {
 	let columns = "";
 
 	if (columnWidths.value.length == 0) {
+		if (isIndexShown.value) columns += "75px ";
 		columns += `repeat(${shownColumnNames.value.length}, minmax(min-content, 1fr)) `;
 	} else {
 		columns += columnWidths.value
 			.map((cw) => `${Math.max(cw, MIN_COLUMN_WIDTH_PX)}px `)
 			.join(" ");
 	}
-
-	if (hasActions.value) {
-		columns += "24px ";
-	}
+	if (hasActions.value) columns += "40px ";
 
 	return columns;
 });
@@ -745,16 +740,16 @@ onUnmounted(() => {
 	border-left: 1px solid var(--separatorColor);
 
 	display: flex;
-	align-items: start;
+	align-items: center;
 	white-space: nowrap;
 	font-size: 0.75rem;
 	text-overflow: ellipsis;
 	cursor: pointer;
 	gap: 8px;
 	user-select: none;
-	font-size: 0.875rem;
-	font-weight: 400;
-	margin-bottom: 12px;
+	/* font-size: 0.875rem; */
+	/* font-weight: 400; */
+	/* margin-bottom: 12px; */
 	border-bottom: none;
 	top: 0;
 	z-index: 1;
@@ -807,7 +802,9 @@ onUnmounted(() => {
 }
 .CoreDataframe__table__th--stickyRight {
 	border-left: 1px solid var(--separatorColor);
+	background: var(--dataframeBackgroundColor);
 	position: sticky;
 	right: 0px;
+	width: 40px;
 }
 </style>

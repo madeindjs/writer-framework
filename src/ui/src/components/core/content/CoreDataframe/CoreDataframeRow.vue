@@ -31,14 +31,15 @@
 				"
 			/>
 		</div>
-		<div
-			v-if="hasActions"
-			class="CoreDataframeRow__cell CoreDataframeRow__cell--hand"
-		>
-			<BaseDropdown
-				:options="actions"
-				@selected="$emit('action', $event, row[ARQUERO_INTERNAL_ID])"
-			/>
+		<div v-if="hasActions" class="CoreDataframeRow__options">
+			<div class="CoreDataframeRow__options__wrapper">
+				<BaseDropdown
+					:options="actions"
+					@selected="
+						$emit('action', $event, row[ARQUERO_INTERNAL_ID])
+					"
+				/>
+			</div>
 		</div>
 	</div>
 </template>
@@ -103,14 +104,6 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	border-left: unset;
 }
 
-.CoreDataframeRow__cell--hand {
-	position: sticky;
-	right: 0px;
-	background-color: var(--dataframeBackgroundColor);
-	box-shadow: var(--wdsShadowMenu);
-	z-index: 2;
-}
-
 .CoreDataframeRow__cell--index {
 	color: var(--secondaryTextColor);
 	min-width: 75px;
@@ -119,8 +112,23 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	align-items: center;
 }
 
-.CoreDataframeRow:hover,
-.CoreDataframeRow:hover .CoreDataframeRow__cell--hand {
+.CoreDataframeRow__options {
+	position: sticky;
+	right: 0px;
+	background-color: var(--dataframeBackgroundColor);
+	box-shadow: var(--wdsShadowMenu);
+	z-index: 2;
+	min-width: unset;
+}
+.CoreDataframeRow__options__wrapper {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.CoreDataframeRow:hover .CoreDataframeRow__options__wrapper {
 	background-color: var(--wdsColorGray1);
 	border-top-right-radius: 56px;
 	border-bottom-right-radius: 56px;
