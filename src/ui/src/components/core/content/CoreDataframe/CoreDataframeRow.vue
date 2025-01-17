@@ -1,18 +1,18 @@
 <template>
-	<tr
+	<div
 		class="CoreDataframeRow"
 		tabindex="0"
 		@mouseover="isRowHovered = true"
 		@mouseleave="isRowHovered = false"
 		@focusin="isRowHovered = true"
 	>
-		<td
+		<div
 			v-if="showIndex"
 			class="CoreDataframeRow__cell CoreDataframeRow__cell--index"
 		>
 			{{ indexText }}
-		</td>
-		<td
+		</div>
+		<div
 			v-for="columnName in columns"
 			:key="`${row[ARQUERO_INTERNAL_ID]}_${columnName}`"
 			class="CoreDataframeRow__cell"
@@ -30,8 +30,8 @@
 					)
 				"
 			/>
-		</td>
-		<td
+		</div>
+		<div
 			v-if="hasActions"
 			class="CoreDataframeRow__cell CoreDataframeRow__cell--hand"
 		>
@@ -39,8 +39,8 @@
 				:options="actions"
 				@selected="$emit('action', $event, row[ARQUERO_INTERNAL_ID])"
 			/>
-		</td>
-	</tr>
+		</div>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -78,9 +78,11 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 
 <style scoped>
 .CoreDataframeRow {
+	display: grid;
 	position: relative;
 	font-size: 0.75rem;
 	min-height: 40px;
+	border-bottom: 1px solid var(--separatorColor);
 }
 .CoreDataframeRow:hover {
 	background-color: var(--wdsColorGray1);
@@ -91,33 +93,36 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	padding: 4px;
 	min-width: 100px;
 	width: 100%;
-	border: 1px solid var(--separatorColor);
 	/* background: var(--dataframeBackgroundColor); */
+	display: flex;
+	align-items: center;
+	border-left: 1px solid var(--separatorColor);
 }
 
 .CoreDataframeRow__cell:first-child {
-	border-left-color: transparent;
-}
-.CoreDataframeRow__cell:last-child {
-	border-right-color: transparent;
+	border-left: unset;
 }
 
 .CoreDataframeRow__cell--hand {
 	position: sticky;
 	right: 0px;
 	background-color: var(--dataframeBackgroundColor);
-	width: 40px;
-	min-width: 40px;
+	box-shadow: var(--wdsShadowMenu);
+	z-index: 2;
 }
 
 .CoreDataframeRow__cell--index {
 	color: var(--secondaryTextColor);
 	min-width: 75px;
+	padding: 8.5px 12px 8.5px 12px;
+	display: flex;
+	align-items: center;
 }
 
 .CoreDataframeRow:hover,
 .CoreDataframeRow:hover .CoreDataframeRow__cell--hand {
 	background-color: var(--wdsColorGray1);
-	border-radius: 56px;
+	border-top-right-radius: 56px;
+	border-bottom-right-radius: 56px;
 }
 </style>

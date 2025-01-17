@@ -18,51 +18,73 @@
 				<i class="material-symbols-outlined">download</i>
 			</WdsControl>
 		</div>
-		<table
+		<div
 			ref="gridContainerEl"
-			:class="{
-				scrolled: rowOffset > 0,
-				wrapText: fields.wrapText.value === 'yes',
-			}"
+			class="CoreDataframe__tableWrapper"
 			@scroll="handleScroll"
 		>
-			<thead>
-				<tr>
-					<th v-if="isIndexShown"></th>
-					<th
+			<div
+				class="CoreDataframe__table"
+				:style="gridStyle"
+				:class="{
+					scrolled: rowOffset > 0,
+					wrapText: fields.wrapText.value === 'yes',
+				}"
+			>
+				<div
+					class="CoreDataframe__table__row"
+					:style="{
+						display: 'grid',
+						'grid-template-columns': gridTemplateColumns,
+					}"
+				>
+					<div
+						v-if="isIndexShown"
+						data-writer-grid-col="0"
+						class="CoreDataframe__table__th CoreDataframe__table__th--index"
+					>
+						<div class="name"></div>
+						<div class="widthAdjuster"></div>
+					</div>
+					<div
 						v-for="(columnName, columnPosition) in shownColumnNames"
 						:key="columnName"
 						:data-writer-grid-col="
 							columnPosition + (isIndexShown ? 1 : 0)
 						"
+						class="CoreDataframe__table__th CoreDataframe__table__th--header"
 						@click="handleSetOrder($event, columnName)"
 					>
-						<div class="CoreDataframe__table__th">
-							<div class="CoreDataframe__table__th__wrapper">
-								<div class="name">
-									{{ columnName }}
-								</div>
-								<span
-									v-show="
-										orderSetting?.columnName == columnName
-									"
-									class="material-symbols-outlined"
-									>{{
-										orderSetting?.descending
-											? "arrow_drop_up"
-											: "arrow_drop_down"
-									}}</span
-								>
-							</div>
+						<div class="name">
+							{{ columnName }}
 						</div>
-					</th>
-					<th v-if="hasActions" style="position: sticky"></th>
-				</tr>
-			</thead>
-			<tbody>
+						<div
+							v-show="orderSetting?.columnName == columnName"
+							class="icon"
+						>
+							<span class="material-symbols-outlined">{{
+								orderSetting?.descending
+									? "arrow_upward"
+									: "arrow_downward"
+							}}</span>
+						</div>
+						<div class="widthAdjuster"></div>
+					</div>
+					<div
+						v-if="hasActions"
+						class="CoreDataframe__table__th CoreDataframe__table__th--stickyRight"
+					>
+						<div class="name">Actions</div>
+						<div class="widthAdjuster"></div>
+					</div>
+				</div>
+
 				<CoreDataframeRow
 					v-for="(row, rowNumber) in slicedTable?.data"
 					:key="rowNumber"
+					:style="{
+						'grid-template-columns': gridTemplateColumns,
+					}"
 					:row="row"
 					:actions="actions"
 					:use-markdown="useMarkdown"
@@ -76,25 +98,24 @@
 					@action="handleActionRow"
 					@change="handleUpdateCell"
 				/>
-			</tbody>
-		</table>
-
-		<div v-if="enableRecordAdd" class="CoreDataframe__newRow cell">
-			<WdsButton
-				aria-label="Create a new row at the end"
-				size="small"
-				variant="tertiary"
-				@click="handleAddRow"
-			>
-				<i class="material-symbols-outlined">add</i>
-				Add a row
-			</WdsButton>
+				<div v-if="enableRecordAdd" class="CoreDataframe__newRow cell">
+					<WdsButton
+						aria-label="Create a new row at the end"
+						size="small"
+						variant="tertiary"
+						@click="handleAddRow"
+					>
+						<i class="material-symbols-outlined">add</i>
+						Add a row
+					</WdsButton>
+				</div>
+			</div>
+			<div
+				v-if="isRowCountMassive"
+				class="endpoint"
+				:style="endpointStyle"
+			></div>
 		</div>
-		<div
-			v-if="isRowCountMassive"
-			class="endpoint"
-			:style="endpointStyle"
-		></div>
 	</div>
 </template>
 
@@ -401,18 +422,18 @@ const slicedTable = computed(() => {
 });
 
 const gridTemplateColumns = computed(() => {
-	let columns = hasActions.value ? "16px " : "";
-
-	if (isIndexShown.value) {
-		columns += "auto ";
-	}
+	let columns = "";
 
 	if (columnWidths.value.length == 0) {
 		columns += `repeat(${shownColumnNames.value.length}, minmax(min-content, 1fr)) `;
 	} else {
 		columns += columnWidths.value
-			.map((cw) => `${Math.max(cw, MIN_COLUMN_WIDTH_PX)}px`)
+			.map((cw) => `${Math.max(cw, MIN_COLUMN_WIDTH_PX)}px `)
 			.join(" ");
+	}
+
+	if (hasActions.value) {
+		columns += "24px ";
 	}
 
 	return columns;
@@ -644,70 +665,13 @@ onUnmounted(() => {
 });
 </script>
 
-<style></style>
-
 <style scoped>
 @import "@/renderer/sharedStyles.css";
 @import "@/renderer/colorTransformations.css";
 
+/* remove the background if the dataframe is being selected in builder mode */
 .CoreDataframe.selected {
 	--dataframeBackgroundColor: var(--builderSelectedColor) !important;
-}
-
-table {
-	width: 100%;
-	border-collapse: collapse;
-	overflow-x: auto;
-	overflow-y: auto;
-	/* table-layout: v-if; */
-	display: block;
-	max-height: calc(11 * 48px);
-}
-table thead {
-	position: sticky;
-	top: -1px;
-	z-index: 1;
-	border-bottom: 1px solid var(--separatorColor);
-	/* background-color: var(--dataframeBackgroundColor); */
-}
-table tbody tr {
-	height: 48px;
-}
-table thead th {
-	border: 1px solid var(--separatorColor);
-	border-top-color: var(--dataframeBackgroundColor);
-}
-table thead th:first-child {
-	border-left-color: transparent;
-}
-table thead th:last-child {
-	border-right-color: transparent;
-}
-
-table tr,
-table td {
-	/* background: var(--dataframeBackgroundColor); */
-}
-
-.CoreDataframe__table__th__wrapper {
-	background: var(--dataframeBackgroundColor);
-}
-.CoreDataframe__table__th__wrapper {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-weight: normal;
-	padding: 8.5px 16px 8.5px 16px;
-	text-align: left;
-}
-.CoreDataframe__table__th .material-symbols-outlined {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-radius: 50%;
-	background-color: var(--wdsColorGray1);
-	height: 18px;
-	width: 18px;
 }
 
 .CoreDataframe {
@@ -752,20 +716,14 @@ table td {
 	border-radius: 8px;
 }
 
-.gridContainer {
+.CoreDataframe__tableWrapper {
 	background: var(--dataframeBackgroundColor);
 	position: relative;
 	overflow: auto;
 	max-height: 90vh;
-	white-space: nowrap;
 }
 
-/* remove the background if the dataframe is being selected in builder mode */
-.CoreDataframe.selected .gridContainer {
-	background: unset;
-}
-
-.grid {
+.CoreDataframe__table {
 	margin-bottom: -1px;
 	position: v-bind("isRowCountMassive ? 'sticky': 'unset'");
 	top: 0;
@@ -778,28 +736,21 @@ table td {
 	width: 1px;
 	background: red;
 }
-</style>
 
-<style>
-.cell {
+.CoreDataframe__table__th {
 	min-height: 36px;
-	padding: 8px;
+	padding: 8.5px 17px;
+
 	overflow: hidden;
 	color: var(--primaryTextColor);
-	border-bottom: 1px solid var(--separatorColor);
+
+	border-left: 1px solid var(--separatorColor);
+
 	display: flex;
 	align-items: start;
 	white-space: nowrap;
 	font-size: 0.75rem;
 	text-overflow: ellipsis;
-}
-
-.grid.wrapText .cell {
-	white-space: pre-wrap;
-}
-
-.cell.headerCell {
-	padding: 0;
 	cursor: pointer;
 	gap: 8px;
 	user-select: none;
@@ -810,26 +761,36 @@ table td {
 	top: 0;
 	z-index: 1;
 }
-
-.grid.scrolled .cell.headerCell {
-	box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.05);
+.CoreDataframe__table__th:first-child {
+	border-left: unset;
 }
 
-.cell .name {
-	padding: 8px;
+.CoreDataframe__table.wrapText .CoreDataframe__table__th {
+	white-space: pre-wrap;
+}
+
+.CoreDataframe__table__row {
+	border-bottom: 1px solid var(--separatorColor);
+}
+.CoreDataframe__table.scrolled .CoreDataframe__table__row {
+	box-shadow: var(--wdsShadowMenu);
+}
+
+.CoreDataframe__table__th .name {
+	/* padding: 8px; */
 	flex: 1 1 auto;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.cell .icon {
+.CoreDataframe__table__th .icon {
 	flex: 0 0 auto;
 	display: flex;
 	align-items: center;
 	visibility: hidden;
 }
 
-.cell .widthAdjuster {
+.CoreDataframe__table__th .widthAdjuster {
 	cursor: col-resize;
 	min-width: 16px;
 	flex: 0 0 16px;
@@ -837,11 +798,16 @@ table td {
 	margin-right: -1px;
 }
 
-.cell:hover .widthAdjuster {
+.CoreDataframe__table__th:hover .widthAdjuster {
 	background-color: var(--separatorColor);
 }
 
-.indexCell {
+.CoreDataframe__table__th--index {
 	color: var(--secondaryTextColor);
+}
+.CoreDataframe__table__th--stickyRight {
+	border-left: 1px solid var(--separatorColor);
+	position: sticky;
+	right: 0px;
 }
 </style>
