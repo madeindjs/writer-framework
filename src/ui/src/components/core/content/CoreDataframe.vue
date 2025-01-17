@@ -39,12 +39,13 @@
 					}"
 				>
 					<div
+						class="CoreDataframe__table__th CoreDataframeRow__spacer"
+					></div>
+					<div
 						v-if="isIndexShown"
 						data-writer-grid-col="0"
 						class="CoreDataframe__table__th CoreDataframe__table__th--index"
-					>
-						<div class="widthAdjuster"></div>
-					</div>
+					></div>
 					<div
 						v-for="(columnName, columnPosition) in shownColumnNames"
 						:key="columnName"
@@ -69,17 +70,16 @@
 									: "arrow_drop_down"
 							}}</span
 						>
-						<div class="widthAdjuster">
-							<span class="material-symbols-outlined">
-								drag_indicator
-							</span>
-						</div>
+						<span class="widthAdjuster material-symbols-outlined">
+							drag_indicator
+						</span>
 					</div>
 					<div
 						v-if="hasActions"
 						class="CoreDataframe__table__th CoreDataframe__table__th--stickyRight"
 					></div>
 				</div>
+
 				<CoreDataframeRow
 					v-for="(row, rowNumber) in slicedTable?.data"
 					:key="rowNumber"
@@ -423,7 +423,7 @@ const slicedTable = computed(() => {
 });
 
 const gridTemplateColumns = computed(() => {
-	let columns = "";
+	let columns = "16px ";
 
 	if (columnWidths.value.length == 0) {
 		if (isIndexShown.value) columns += "75px ";
@@ -628,11 +628,9 @@ async function handleWidthAdjust(ev: MouseEvent) {
 	const colEl = gridContainerEl.value.querySelector(
 		`[data-writer-grid-col="${columnBeingWidthAdjusted}"]`,
 	);
-	const adjusterEl = colEl.querySelector(".widthAdjuster");
-	const { width: adjusterWidth } = adjusterEl.getBoundingClientRect();
 	const { left: colLeft } = colEl.getBoundingClientRect();
 	const mouseX = ev.clientX;
-	const newWidth = mouseX - colLeft + adjusterWidth / 2;
+	const newWidth = mouseX - colLeft;
 	columnWidths.value[columnBeingWidthAdjusted] = newWidth;
 }
 
@@ -739,29 +737,19 @@ onUnmounted(() => {
 }
 
 .CoreDataframe__table__th {
-	min-height: 36px;
 	padding: 8.5px 17px;
-
-	overflow: hidden;
 	color: var(--primaryTextColor);
-
 	border-left: 1px solid var(--separatorColor);
-
 	display: flex;
 	align-items: center;
 	white-space: nowrap;
-	font-size: 0.75rem;
-	text-overflow: ellipsis;
 	gap: 8px;
 	user-select: none;
-	/* font-size: 0.875rem; */
-	/* font-weight: 400; */
-	/* margin-bottom: 12px; */
-	border-bottom: none;
-	top: 0;
-	z-index: 1;
+	position: relative;
 }
-.CoreDataframe__table__th:first-child {
+
+.CoreDataframe__table__th:first-child,
+.CoreDataframe__table__th:nth-child(2) {
 	border-left: unset;
 }
 
@@ -777,6 +765,7 @@ onUnmounted(() => {
 }
 
 .CoreDataframe__table__th__name {
+	font-size: 0.75rem;
 	text-align: left;
 	background-color: transparent;
 	border: none;
@@ -796,16 +785,22 @@ onUnmounted(() => {
 	background-color: var(--wdsColorGray1);
 }
 
-.CoreDataframe__table__th .widthAdjuster {
+.widthAdjuster {
+	display: block;
 	cursor: col-resize;
-	min-width: 16px;
-	flex: 0 0 16px;
-	height: 100%;
-	margin-right: -1px;
-}
+	width: 18px;
+	height: 18px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	transform: translateX(50%);
+	z-index: 1;
 
-.CoreDataframe__table__th:hover .widthAdjuster {
-	/* background-color: var(--separatorColor); */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	background-color: var(--dataframeBackgroundColor);
 }
 
 .CoreDataframe__table__th--index {
@@ -813,9 +808,10 @@ onUnmounted(() => {
 }
 .CoreDataframe__table__th--stickyRight {
 	border-left: 1px solid var(--separatorColor);
-	background: var(--dataframeBackgroundColor);
+	background-color: var(--dataframeBackgroundColor);
 	position: sticky;
 	right: 0px;
 	width: 40px;
+	z-index: 1;
 }
 </style>

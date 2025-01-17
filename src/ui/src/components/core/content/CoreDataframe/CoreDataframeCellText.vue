@@ -49,12 +49,9 @@ function stopEditing() {
 	border: 1px solid transparent;
 
 	overflow: hidden;
-	display: -webkit-box;
-	-webkit-line-clamp: 1; /* number of lines to show */
-	line-clamp: 1;
 	text-overflow: ellipsis;
-	word-wrap: break-word;
-	-webkit-box-orient: vertical;
+	white-space: nowrap;
+	width: 100%;
 }
 
 .CoreDataframeCellText--textarea {

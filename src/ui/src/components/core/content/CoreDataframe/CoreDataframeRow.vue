@@ -6,6 +6,7 @@
 		@mouseleave="isRowHovered = false"
 		@focusin="isRowHovered = true"
 	>
+		<div class="CoreDataframeRow__spacer"></div>
 		<div
 			v-if="showIndex"
 			class="CoreDataframeRow__cell CoreDataframeRow__cell--index"
@@ -79,6 +80,7 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 
 <style scoped>
 .CoreDataframeRow {
+	width: fit-content;
 	display: grid;
 	position: relative;
 	font-size: 0.75rem;
@@ -94,13 +96,13 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	padding: 4px;
 	min-width: 100px;
 	width: 100%;
-	/* background: var(--dataframeBackgroundColor); */
 	display: flex;
 	align-items: center;
 	border-left: 1px solid var(--separatorColor);
 }
 
-.CoreDataframeRow__cell:first-child {
+.CoreDataframeRow__cell:first-child,
+.CoreDataframeRow__cell:nth-child(2) {
 	border-left: unset;
 }
 
@@ -110,6 +112,7 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	padding: 8.5px 12px 8.5px 12px;
 	display: flex;
 	align-items: center;
+	border-left: unset;
 }
 
 .CoreDataframeRow__options {
@@ -117,7 +120,7 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	right: 0px;
 	background-color: var(--dataframeBackgroundColor);
 	box-shadow: var(--wdsShadowMenu);
-	z-index: 2;
+	z-index: 3;
 	min-width: unset;
 }
 .CoreDataframeRow__options__wrapper {
