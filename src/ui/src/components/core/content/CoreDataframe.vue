@@ -43,7 +43,6 @@
 						data-writer-grid-col="0"
 						class="CoreDataframe__table__th CoreDataframe__table__th--index"
 					>
-						<div class="name"></div>
 						<div class="widthAdjuster"></div>
 					</div>
 					<div
@@ -53,11 +52,14 @@
 							columnPosition + (isIndexShown ? 1 : 0)
 						"
 						class="CoreDataframe__table__th"
-						@click="handleSetOrder($event, columnName)"
 					>
-						<div class="CoreDataframe__table__th__name">
+						<button
+							type="button"
+							class="CoreDataframe__table__th__name"
+							@click="handleSetOrder($event, columnName)"
+						>
 							{{ columnName }}
-						</div>
+						</button>
 						<span
 							v-if="orderSetting?.columnName == columnName"
 							class="CoreDataframe__table__th__icon material-symbols-outlined"
@@ -67,7 +69,11 @@
 									: "arrow_drop_down"
 							}}</span
 						>
-						<div class="widthAdjuster"></div>
+						<div class="widthAdjuster">
+							<span class="material-symbols-outlined">
+								drag_indicator
+							</span>
+						</div>
 					</div>
 					<div
 						v-if="hasActions"
@@ -609,7 +615,9 @@ async function handleWidthAdjust(ev: MouseEvent) {
 		columnBeingWidthAdjusted === null &&
 		targetEl.classList.contains("widthAdjuster")
 	) {
-		const adjustedColEl = targetEl.closest(".cell") as HTMLElement;
+		const adjustedColEl = targetEl.closest(
+			".CoreDataframe__table__th",
+		) as HTMLElement;
 		columnBeingWidthAdjusted = parseInt(
 			adjustedColEl.dataset.writerGridCol,
 		);
@@ -744,7 +752,6 @@ onUnmounted(() => {
 	white-space: nowrap;
 	font-size: 0.75rem;
 	text-overflow: ellipsis;
-	cursor: pointer;
 	gap: 8px;
 	user-select: none;
 	/* font-size: 0.875rem; */
@@ -770,7 +777,11 @@ onUnmounted(() => {
 }
 
 .CoreDataframe__table__th__name {
-	/* padding: 8px; */
+	text-align: left;
+	background-color: transparent;
+	border: none;
+	font-size: inherit;
+	cursor: pointer;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
@@ -794,7 +805,7 @@ onUnmounted(() => {
 }
 
 .CoreDataframe__table__th:hover .widthAdjuster {
-	background-color: var(--separatorColor);
+	/* background-color: var(--separatorColor); */
 }
 
 .CoreDataframe__table__th--index {
