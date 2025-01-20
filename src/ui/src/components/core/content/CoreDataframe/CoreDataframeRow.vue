@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="root"
 		class="CoreDataframeRow"
 		tabindex="0"
 		@mouseover="isRowHovered = true"
@@ -21,7 +22,7 @@
 			<CoreDataframeCell
 				:value="row[columnName]"
 				:use-markdown="useMarkdown"
-				:editable="editable && isRowHovered"
+				:editable="editable && (isRowHovered || hasFocusWithin)"
 				@change="
 					$emit(
 						'change',
@@ -56,6 +57,7 @@ import { computed, PropType, ref } from "vue";
 import CoreDataframeCell from "./CoreDataframeCell.vue";
 import BaseDropdown from "../../base/BaseDropdown.vue";
 import { ARQUERO_INTERNAL_ID } from "./constants";
+import { useFocusWithin } from "@/composables/useFocusWithin";
 
 const props = defineProps({
 	showIndex: { type: Boolean, required: false },
@@ -80,6 +82,10 @@ defineEmits({
 		typeof index === "number" && typeof action === "string",
 });
 
+const root = ref<HTMLElement>();
+
+const hasFocusWithin = useFocusWithin(root);
+
 const isRowHovered = ref(false);
 
 const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
@@ -95,6 +101,10 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	border-bottom: 1px solid var(--separatorColor);
 }
 .CoreDataframeRow:hover {
+	background-color: var(--wdsColorGray1);
+	border-radius: 56px;
+}
+.CoreDataframeRow:focus-within {
 	background-color: var(--wdsColorGray1);
 	border-radius: 56px;
 }
