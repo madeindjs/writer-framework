@@ -18,7 +18,6 @@ const input = ref<HTMLTextAreaElement | undefined>();
 
 function onChange(newValue: number) {
 	if (newValue === props.value) return;
-	console.log(newValue);
 	emits("change", newValue);
 }
 </script>
@@ -29,7 +28,7 @@ function onChange(newValue: number) {
 		ref="input"
 		class="CoreDataframeCellNumber--input"
 		:model-value="Number(value)"
-		@update:model-value="onChange($event)"
+		@focusout="onChange($event)"
 	/>
 	<div v-else class="CoreDataframeCellNumber--text">
 		{{ value }}
@@ -40,7 +39,7 @@ function onChange(newValue: number) {
 .CoreDataframeCellNumber--input,
 .CoreDataframeCellNumber--text {
 	width: 100%;
-	font-size: 0.75rem;
+	font-size: 12px;
 }
 
 .CoreDataframeCellNumber--input {

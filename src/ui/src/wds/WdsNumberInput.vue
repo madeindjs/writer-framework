@@ -1,5 +1,5 @@
 <template>
-	<div class="WdsNumberInput colorTransformer">
+	<div class="WdsNumberInput colorTransformer" @click="focusNextTick">
 		<div
 			class="WdsNumberInput__left colorTransformer"
 			@click="input.focus()"
@@ -17,14 +17,15 @@
 			<button
 				class="WdsNumberInput__right__arrow"
 				type="button"
-				@click.passive="increase"
+				@click.prevent="increase(step)"
+				@pointerdown.prevent
 			>
 				<span class="WdsNumberInput__right__arrow__up"></span>
 			</button>
 			<button
 				class="WdsNumberInput__right__arrow"
 				type="button"
-				@click.stop="decrease"
+				@click.prevent="increase(-step)"
 				@pointerdown.prevent
 			>
 				<span class="WdsNumberInput__right__arrow__down"></span>
@@ -34,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 
 const model = defineModel({
 	type: Number,
@@ -49,7 +50,7 @@ defineEmits({
 // disable attributes inheritance to apply attr to nested input
 defineOptions({ inheritAttrs: false });
 
-const props = defineProps({
+defineProps({
 	step: { type: Number, default: 1 },
 });
 
@@ -57,19 +58,13 @@ defineExpose({ focus });
 
 const input = ref<HTMLInputElement>();
 
-function increase() {
-	if (model.value === undefined) {
-		model.value = props.step;
-	} else {
-		model.value += props.step;
-	}
+function increase(step: number) {
+	model.value = (model.value ?? 0) + step;
 }
-function decrease() {
-	if (model.value === undefined) {
-		model.value = -props.step;
-	} else {
-		model.value -= props.step;
-	}
+
+async function focusNextTick() {
+	await nextTick();
+	focus();
 }
 
 function focus() {
@@ -86,7 +81,6 @@ function focus() {
 	border: 1px solid var(--separatorColor);
 	background-color: var(--wdsColorWhite);
 	border-radius: 8px;
-	font-size: 14px;
 	outline: none;
 	color: var(--primaryTextColor);
 
@@ -108,12 +102,12 @@ function focus() {
 }
 
 .WdsNumberInput__input {
-	font-size: 14px;
 	border: none;
 	background: transparent;
 	-webkit-appearance: none;
 	-moz-appearance: textfield;
 	appearance: textfield;
+	width: 100%;
 }
 .WdsNumberInput__input:focus {
 	border: none;
