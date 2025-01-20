@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import WdsButton from "@/wds/WdsButton.vue";
 import { onMounted, onUnmounted, PropType, ref } from "vue";
 
 defineProps({
@@ -47,16 +46,14 @@ onUnmounted(() => window.removeEventListener("scroll", closePopover));
 
 <template>
 	<div class="BaseDropdown">
-		<WdsButton
+		<button
 			ref="trigger"
-			variant="tertiary"
-			size="smallIcon"
 			:popovertarget="popoverId"
 			class="BaseDropdown__trigger"
 			@click="computePopoverPosition"
 		>
 			<i class="material-symbols-outlined">more_horiz</i>
-		</WdsButton>
+		</button>
 		<div
 			:id="popoverId"
 			ref="popover"
@@ -81,19 +78,24 @@ onUnmounted(() => window.removeEventListener("scroll", closePopover));
 .BaseDropdown {
 	position: relative;
 }
+
 .BaseDropdown__trigger {
-	border-color: transparent;
+	cursor: pointer;
 	background-color: transparent;
-}
-.BaseDropdown__trigger:focus {
-	background-color: transparent;
-	border-color: transparent;
+	border: none;
+	height: 16px;
+	width: 16px;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .BaseDropdown__dropdown {
 	position: absolute;
 	z-index: 1;
 	top: 18px;
+	transform: translateX(calc(-100% + 18px));
 	background-color: white;
 
 	flex-direction: column;
