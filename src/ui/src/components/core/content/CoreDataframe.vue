@@ -45,7 +45,11 @@
 						v-if="isIndexShown"
 						data-writer-grid-col="0"
 						class="CoreDataframe__table__th CoreDataframe__table__th--index"
-					></div>
+					>
+						<span class="widthAdjuster material-symbols-outlined">
+							drag_indicator
+						</span>
+					</div>
 					<div
 						v-for="(columnName, columnPosition) in shownColumnNames"
 						:key="columnName"
@@ -100,23 +104,23 @@
 					@action="handleActionRow"
 					@change="handleUpdateCell"
 				/>
-				<div v-if="enableRecordAdd" class="CoreDataframe__newRow cell">
-					<WdsButton
-						aria-label="Create a new row at the end"
-						size="small"
-						variant="tertiary"
-						@click="handleAddRow"
-					>
-						<i class="material-symbols-outlined">add</i>
-						Add a row
-					</WdsButton>
-				</div>
 			</div>
 			<div
 				v-if="isRowCountMassive"
 				class="endpoint"
 				:style="endpointStyle"
 			></div>
+		</div>
+		<div v-if="enableRecordAdd" class="CoreDataframe__newRow">
+			<WdsButton
+				aria-label="Create a new row at the end"
+				size="small"
+				variant="tertiary"
+				@click="onAddRow"
+			>
+				<i class="material-symbols-outlined">add</i>
+				Add a row
+			</WdsButton>
 		</div>
 	</div>
 </template>
@@ -355,6 +359,14 @@ const {
 	handleActionRow,
 	isBusy: isUpdatingBusy,
 } = useDataFrameValueBroker(wf, instancePath, rootEl, table);
+
+async function onAddRow() {
+	await handleAddRow();
+	gridContainerEl.value.scrollTo({
+		behavior: "smooth",
+		top: ROW_HEIGHT_PX * rowCount.value,
+	});
+}
 
 const isBusy = computed(() => isLoadingData.value || isUpdatingBusy.value);
 
@@ -703,18 +715,7 @@ onUnmounted(() => {
 	display: flex;
 	align-self: center;
 	justify-content: center;
-}
-.CoreDataframe__newRow__btn {
-	cursor: pointer;
-
-	background-color: var(--separatorColor);
-	border: 1px solid var(--emptinessColor);
-	height: 16px;
-	width: 16px;
-	border-radius: 4px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	padding: 8.5px 17px;
 }
 
 .tools {
