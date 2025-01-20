@@ -56,5 +56,6 @@ function stopEditing() {
 
 .CoreDataframeCellText--textarea {
 	resize: vertical;
+	height: 100%;
 }
 </style>

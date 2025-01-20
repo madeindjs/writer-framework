@@ -48,6 +48,7 @@ function onChange() {
 .CoreDataframeCellNumber--input {
 	resize: vertical;
 	background-color: var(--wdsColorWhite);
+	height: 100%;
 }
 .CoreDataframeCellNumber--input:focus {
 	border: unset;
