@@ -18,6 +18,7 @@
 				<i class="material-symbols-outlined">download</i>
 			</WdsControl>
 		</div>
+		<WdsNumberInput />
 		<div
 			ref="gridContainerEl"
 			class="CoreDataframe__tableWrapper"
@@ -146,6 +147,7 @@ import {
 import WdsButton from "@/wds/WdsButton.vue";
 import { WdsColor } from "@/wds/tokens";
 import { useLogger } from "@/composables/useLogger";
+import WdsNumberInput from "@/wds/WdsNumberInput.vue";
 
 const description = "A component to display Pandas DataFrames.";
 
@@ -834,5 +836,9 @@ onUnmounted(() => {
 	justify-content: center;
 
 	background-color: var(--dataframeBackgroundColor);
+	color: var(--wdsColorGray4);
+}
+.widthAdjuster:hover {
+	color: var(--wdsColorBlack);
 }
 </style>

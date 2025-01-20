@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WdsTextInput from "@/wds/WdsTextInput.vue";
+import WdsNumberInput from "@/wds/WdsNumberInput.vue";
 import { ref } from "vue";
 
 const props = defineProps({
@@ -11,27 +11,25 @@ const props = defineProps({
 });
 
 const emits = defineEmits({
-	change: (value: string) => typeof value === "string",
+	change: (value: number) => typeof value === "number",
 });
 
 const input = ref<HTMLTextAreaElement | undefined>();
 
-function onChange() {
-	const newValue = Number(input.value.value);
+function onChange(newValue: number) {
 	if (newValue === props.value) return;
-	emits("change", input.value.value);
+	console.log(newValue);
+	emits("change", newValue);
 }
 </script>
 
 <template>
-	<!-- TODO: introduce `<WdsNumberInput />`-->
-	<WdsTextInput
+	<WdsNumberInput
 		v-if="editable"
 		ref="input"
 		class="CoreDataframeCellNumber--input"
-		type="number"
-		:model-value="String(value)"
-		@focusout="onChange"
+		:model-value="Number(value)"
+		@update:model-value="onChange($event)"
 	/>
 	<div v-else class="CoreDataframeCellNumber--text">
 		{{ value }}

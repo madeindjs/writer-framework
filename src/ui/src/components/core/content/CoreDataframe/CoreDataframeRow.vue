@@ -94,7 +94,7 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 <style scoped>
 .CoreDataframeRow {
 	width: fit-content;
-	display: grid;
+
 	position: relative;
 	font-size: 0.75rem;
 	min-height: 40px;

@@ -25,5 +25,6 @@ const text = computed(() => JSON.stringify(props.value, bigIntReplacer));
 
 	border: 1px solid transparent;
 	padding: 8.5px 12px 8.5px 12px;
+	pointer-events: none;
 }
 </style>
