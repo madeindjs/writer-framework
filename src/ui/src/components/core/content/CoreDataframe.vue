@@ -32,11 +32,7 @@
 				}"
 			>
 				<div
-					class="CoreDataframe__table__row"
-					:style="{
-						display: 'grid',
-						'grid-template-columns': gridTemplateColumns,
-					}"
+					class="CoreDataframe__table__row CoreDataframe__table__row--head"
 				>
 					<div
 						class="CoreDataframe__table__th CoreDataframeRow__spacer"
@@ -87,9 +83,7 @@
 				<CoreDataframeRow
 					v-for="(row, rowNumber) in slicedTable?.data"
 					:key="rowNumber"
-					:style="{
-						'grid-template-columns': gridTemplateColumns,
-					}"
+					class="CoreDataframe__table__row"
 					:row="row"
 					:actions="actions"
 					:use-markdown="useMarkdown"
@@ -428,9 +422,7 @@ const slicedTable = computed(() => {
 		? displayRowCount.value
 		: MASSIVE_ROW_COUNT;
 	const data = table.value.objects({ offset, limit });
-	const indices = table.value
-		.indices()
-		.slice(rowOffset.value, rowOffset.value + displayRowCount.value);
+	const indices = table.value.indices().slice(offset, limit);
 
 	return { data, indices };
 });
@@ -458,7 +450,9 @@ const gridStyle = computed(() => {
 		"min-height": `${(1 + fields.displayRowCount.value + Number(enableRecordAdd.value ?? false)) * ROW_HEIGHT_PX}px`,
 		"max-height": `${(displayRowCount.value + 1 + Number(enableRecordAdd.value ?? false)) * ROW_HEIGHT_PX}px`,
 		"font-family": fontStyle == "monospace" ? "monospace" : undefined,
+		display: "grid",
 		"grid-template-rows": `${ROW_HEIGHT_PX}px repeat(${displayRowCount.value}, min-content) ${ROW_ADD_RECORD_HEIGHT_PX}px`,
+		"grid-template-columns": gridTemplateColumns.value,
 	};
 });
 
@@ -507,13 +501,15 @@ async function recalculateColumnWidths() {
 	const columnHeadersEls = gridContainerEl.value?.querySelectorAll(
 		"[data-writer-grid-col]",
 	);
+	const newWidths = [];
 	columnHeadersEls?.forEach((headerEl) => {
 		const headerHTMLEl = headerEl as HTMLElement;
 		const columnPosition = headerHTMLEl.dataset.writerGridCol;
 		const { width: autoWidth } = headerHTMLEl.getBoundingClientRect();
 		const newWidth = Math.min(autoWidth, MAX_COLUMN_AUTO_WIDTH_PX);
-		columnWidths.value[columnPosition] = newWidth;
+		newWidths[columnPosition] = newWidth;
 	});
+	columnWidths.value = newWidths;
 }
 
 function handleSetOrder(ev: MouseEvent, columnName: string) {
@@ -758,6 +754,16 @@ onUnmounted(() => {
 	background: red;
 }
 
+.CoreDataframe__table__row {
+	border-bottom: 1px solid var(--separatorColor);
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+}
+.CoreDataframe__table.scrolled .CoreDataframe__table__row--head {
+	box-shadow: var(--wdsShadowMenu);
+}
+
 .CoreDataframe__table__th {
 	padding: 8.5px 17px;
 	color: var(--primaryTextColor);
@@ -777,13 +783,6 @@ onUnmounted(() => {
 
 .CoreDataframe__table.wrapText .CoreDataframe__table__th {
 	white-space: pre-wrap;
-}
-
-.CoreDataframe__table__row {
-	border-bottom: 1px solid var(--separatorColor);
-}
-.CoreDataframe__table.scrolled .CoreDataframe__table__row {
-	box-shadow: var(--wdsShadowMenu);
 }
 
 .CoreDataframe__table__th__name {
@@ -807,6 +806,18 @@ onUnmounted(() => {
 	background-color: var(--wdsColorGray1);
 }
 
+.CoreDataframe__table__th--index {
+	color: var(--secondaryTextColor);
+}
+.CoreDataframe__table__th--stickyRight {
+	border-left: 1px solid var(--separatorColor);
+	background-color: var(--dataframeBackgroundColor);
+	position: sticky;
+	right: 0px;
+	width: 40px;
+	z-index: 1;
+}
+
 .widthAdjuster {
 	display: block;
 	cursor: col-resize;
@@ -823,17 +834,5 @@ onUnmounted(() => {
 	justify-content: center;
 
 	background-color: var(--dataframeBackgroundColor);
-}
-
-.CoreDataframe__table__th--index {
-	color: var(--secondaryTextColor);
-}
-.CoreDataframe__table__th--stickyRight {
-	border-left: 1px solid var(--separatorColor);
-	background-color: var(--dataframeBackgroundColor);
-	position: sticky;
-	right: 0px;
-	width: 40px;
-	z-index: 1;
 }
 </style>
