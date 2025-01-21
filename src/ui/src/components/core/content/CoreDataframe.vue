@@ -321,7 +321,6 @@ import type { Table } from "apache-arrow";
  */
 const MASSIVE_ROW_COUNT = 1000;
 const ROW_HEIGHT_PX = 48; // Must match CSS
-const ROW_ADD_RECORD_HEIGHT_PX = 58;
 const MIN_COLUMN_WIDTH_PX = 80;
 const MAX_COLUMN_AUTO_WIDTH_PX = 300;
 
@@ -422,7 +421,9 @@ const slicedTable = computed(() => {
 		? displayRowCount.value
 		: MASSIVE_ROW_COUNT;
 	const data = table.value.objects({ offset, limit });
-	const indices = table.value.indices().slice(offset, limit);
+	const indices = table.value
+		.indices()
+		.slice(offset, rowOffset.value + displayRowCount.value);
 
 	return { data, indices };
 });
