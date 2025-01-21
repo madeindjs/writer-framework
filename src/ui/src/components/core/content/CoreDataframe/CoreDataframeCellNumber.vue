@@ -39,7 +39,7 @@ function onChange(newValue: number) {
 .CoreDataframeCellNumber--input,
 .CoreDataframeCellNumber--text {
 	width: 100%;
-	font-size: 12px;
+	font-size: inherit;
 }
 
 .CoreDataframeCellNumber--input {

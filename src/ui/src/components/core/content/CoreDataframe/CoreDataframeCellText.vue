@@ -41,7 +41,7 @@ function stopEditing() {
 .CoreDataframeCellText--textarea,
 .CoreDataframeCellText--text {
 	width: 100%;
-	font-size: 0.75rem;
+	font-size: inherit;
 }
 
 .CoreDataframeCellText--text {
