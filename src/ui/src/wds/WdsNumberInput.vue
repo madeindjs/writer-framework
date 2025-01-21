@@ -1,18 +1,13 @@
 <template>
-	<div class="WdsNumberInput colorTransformer" @click="focusNextTick">
-		<div
-			class="WdsNumberInput__left colorTransformer"
-			@click="input.focus()"
-		>
-			<input
-				ref="input"
-				v-model="model"
-				class="WdsNumberInput__input"
-				v-bind="$attrs"
-				type="number"
-				@focusout="$emit('focusout', model)"
-			/>
-		</div>
+	<div class="WdsNumberInput colorTransformer" :class="props.class">
+		<input
+			ref="input"
+			v-model="model"
+			class="WdsNumberInput__input"
+			v-bind="$attrs"
+			type="number"
+			@focusout="$emit('focusout', model)"
+		/>
 		<div class="WdsNumberInput__right">
 			<button
 				class="WdsNumberInput__right__arrow"
@@ -35,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
+import { ref } from "vue";
 
 const model = defineModel({
 	type: Number,
@@ -50,8 +45,9 @@ defineEmits({
 // disable attributes inheritance to apply attr to nested input
 defineOptions({ inheritAttrs: false });
 
-defineProps({
+const props = defineProps({
 	step: { type: Number, default: 1 },
+	class: { type: String, default: undefined },
 });
 
 defineExpose({ focus });
@@ -60,10 +56,6 @@ const input = ref<HTMLInputElement>();
 
 function increase(step: number) {
 	model.value = (model.value ?? 0) + step;
-}
-
-async function focusNextTick() {
-	await nextTick();
 	focus();
 }
 
@@ -96,12 +88,13 @@ function focus() {
 	border: 1px solid var(--softenedAccentColor);
 	box-shadow: 0px 0px 0px 3px rgba(81, 31, 255, 0.05);
 }
-.WdsNumberInput__left,
+.WdsNumberInput__input,
 .WdsNumberInput__right {
 	padding: 8.5px 12px 8.5px 12px;
 }
 
 .WdsNumberInput__input {
+	font-size: inherit;
 	border: none;
 	background: transparent;
 	-webkit-appearance: none;
