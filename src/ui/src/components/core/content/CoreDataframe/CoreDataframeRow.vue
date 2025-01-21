@@ -23,6 +23,7 @@
 				:value="row[columnName]"
 				:use-markdown="useMarkdown"
 				:editable="editable && (isRowHovered || hasFocusWithin)"
+				class="CoreDataframeRow__cell__content"
 				@change="
 					$emit(
 						'change',
@@ -113,9 +114,11 @@ const hasActions = computed(() => Object.keys(props.actions || {}).length > 0);
 	padding: 4px;
 	min-width: 100px;
 	width: 100%;
+	border-left: 1px solid var(--separatorColor);
+}
+.CoreDataframeRow__cell__content {
 	display: flex;
 	align-items: center;
-	border-left: 1px solid var(--separatorColor);
 }
 
 .CoreDataframeRow__cell:first-child,

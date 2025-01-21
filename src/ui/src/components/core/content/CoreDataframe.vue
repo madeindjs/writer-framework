@@ -445,13 +445,14 @@ const gridTemplateColumns = computed(() => {
 
 const gridStyle = computed(() => {
 	const fontStyle = fields.fontStyle.value;
+	const height = `${(1 + fields.displayRowCount.value) * ROW_HEIGHT_PX}px`;
 
 	return {
-		"min-height": `${(1 + fields.displayRowCount.value + Number(enableRecordAdd.value ?? false)) * ROW_HEIGHT_PX}px`,
-		"max-height": `${(displayRowCount.value + 1 + Number(enableRecordAdd.value ?? false)) * ROW_HEIGHT_PX}px`,
+		"min-height": height,
+		"max-height": height,
 		"font-family": fontStyle == "monospace" ? "monospace" : undefined,
 		display: "grid",
-		"grid-template-rows": `${ROW_HEIGHT_PX}px repeat(${displayRowCount.value}, min-content) ${ROW_ADD_RECORD_HEIGHT_PX}px`,
+		"grid-template-rows": `${ROW_HEIGHT_PX}px repeat(${displayRowCount.value}, max(${ROW_HEIGHT_PX}px , min-content))`,
 		"grid-template-columns": gridTemplateColumns.value,
 	};
 });
