@@ -120,7 +120,7 @@
 </template>
 
 <script lang="ts">
-import { computed, inject, ref, shallowRef } from "vue";
+import { computed, CSSProperties, inject, ref, shallowRef } from "vue";
 import { FieldCategory, FieldType } from "@/writerTypes";
 import CoreDataframeRow from "./CoreDataframe/CoreDataframeRow.vue";
 import {
@@ -444,15 +444,15 @@ const gridTemplateColumns = computed(() => {
 	return columns;
 });
 
-const gridStyle = computed(() => {
+const gridStyle = computed<CSSProperties>(() => {
 	const fontStyle = fields.fontStyle.value;
 	const height = `${(1 + fields.displayRowCount.value) * ROW_HEIGHT_PX}px`;
 
 	return {
-		"min-height": height,
+		position: isRowCountMassive.value ? "sticky" : "unset",
+		"min-height": `${ROW_HEIGHT_PX}px`,
 		"max-height": height,
 		"font-family": fontStyle == "monospace" ? "monospace" : undefined,
-		display: "grid",
 		"grid-template-rows": `${ROW_HEIGHT_PX}px repeat(${displayRowCount.value}, max(${ROW_HEIGHT_PX}px , min-content))`,
 		"grid-template-columns": gridTemplateColumns.value,
 	};
@@ -743,8 +743,8 @@ onUnmounted(() => {
 }
 
 .CoreDataframe__table {
+	display: grid;
 	margin-bottom: -1px;
-	position: v-bind("isRowCountMassive ? 'sticky': 'unset'");
 	top: 0;
 	display: grid;
 }
