@@ -28,7 +28,12 @@
 			</WdsButton>
 
 			<slot name="nameLeft" />
-			<span class="BuilderTree__main__name">{{ name }}</span>
+			<span
+				class="BuilderTree__main__name"
+				:data-writer-tooltip="name"
+				data-writer-tooltip-strategy="overflow"
+				>{{ name }}</span
+			>
 			<slot name="nameRight" />
 			<BaseDropdown
 				v-if="dropdownOptions && isMainHovered"
@@ -139,7 +144,6 @@ function toggleCollapse() {
 
 .BuilderTree__main__name {
 	color: var(--builderPrimaryTextColor);
-	flex-grow: 1;
 }
 
 .BuilderTree__main__collapser {
