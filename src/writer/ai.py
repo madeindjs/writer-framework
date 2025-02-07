@@ -705,6 +705,7 @@ def list_graphs(config: Optional[APIListOptions] = None) -> List[Graph]:
     config = config or {}
     graphs = Graph._retrieve_graphs_accessor()
     sdk_graphs = graphs.list(**config)
+    # TODO: what do we do if there is `has_more: true` / name the request "listRequest"
     return [Graph(sdk_graph) for sdk_graph in sdk_graphs]
 
 

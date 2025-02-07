@@ -211,6 +211,8 @@ class AppProcess(multiprocessing.Process):
 
         mutations = {}
 
+        # TODO: try to put writer.ai here
+
         try:
             mutations = session.session_state.user_state.get_mutations_as_dict()
         except BaseException:

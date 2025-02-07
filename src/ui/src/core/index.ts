@@ -9,6 +9,9 @@ import {
 	MailItem,
 	SourceFiles,
 	UserFunction,
+	WriterGraph,
+	WriterGraphRequest,
+	WriterGraphResponse,
 } from "@/writerTypes";
 import {
 	getSupportedComponentTypes,
@@ -491,6 +494,24 @@ export function generateCore() {
 		});
 	}
 
+	async function sendWriterGraphRequest(
+		request: WriterGraphRequest,
+	): Promise<WriterGraph[]> {
+		return new Promise<WriterGraph[]>((resolve, reject) => {
+			const messageCallback = (r: {
+				ok: boolean;
+				payload: { graphs: WriterGraph[] };
+			}) => {
+				if (!r.ok) {
+					reject("Couldn't connect to the server.");
+					return;
+				}
+				resolve(r.payload.graphs);
+			};
+			sendFrontendMessage("fetchWriterGraphs", request, messageCallback);
+		});
+	}
+
 	async function sendStateEnquiry(callback: Function) {
 		sendFrontendMessage("stateEnquiry", {}, callback, true);
 	}
@@ -688,6 +709,7 @@ export function generateCore() {
 		sendRenameSourceFileRequest,
 		sendDeleteSourceFileRequest,
 		requestSourceFileLoading,
+		sendWriterGraphRequest,
 		sendComponentUpdate,
 		addComponent,
 		deleteComponent,

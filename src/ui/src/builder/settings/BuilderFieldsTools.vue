@@ -58,7 +58,14 @@
 					label="Graph id(s)"
 					hint="Specify the id of the knowledge graph you want to use. If multiple, separate the ids using commas."
 				>
+					<BuilderSelect
+						v-if="graphs.length > 0"
+						:options="graphs"
+						enable-search
+						enable-multi-selection
+					/>
 					<WdsTextareaInput
+						v-else
 						v-model="toolForm.graphIds"
 					></WdsTextareaInput>
 				</WdsFieldWrapper>
@@ -81,6 +88,8 @@ import WdsTextInput from "@/wds/WdsTextInput.vue";
 import WdsTextareaInput from "@/wds/WdsTextareaInput.vue";
 import WdsDropdownInput from "@/wds/WdsDropdownInput.vue";
 import WdsFieldWrapper from "@/wds/WdsFieldWrapper.vue";
+import { useWriterGraphList } from "@/composables/useWriterGraphList";
+import BuilderSelect from "../BuilderSelect.vue";
 
 const BuilderEmbeddedCodeEditor = defineAsyncComponent(
 	() => import("../BuilderEmbeddedCodeEditor.vue"),
@@ -127,7 +136,7 @@ const initFunctionToolCode = `
 }
 `.trim();
 
-const toolFormInitValue = {
+const toolFormInitValue: ToolForm = {
 	isShown: false,
 	type: "function" as "function" | "graph",
 	name: "new_tool",
@@ -154,11 +163,14 @@ const tools = computed<Record<string, Tool>>(() => {
 	return value;
 });
 
+const { load: loadGraphs, options: graphs } = useWriterGraphList(wf);
+
 function resetAndShowToolFormModal() {
 	toolForm.value = {
 		...toolFormInitValue,
 		isShown: true,
 	};
+	loadGraphs().catch(console.error);
 }
 
 function getToolFromForm(): Tool {

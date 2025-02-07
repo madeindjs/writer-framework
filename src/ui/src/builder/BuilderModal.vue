@@ -86,7 +86,7 @@ const handleKeydown = (ev: KeyboardEvent) => {
 .main {
 	background: white;
 	width: 80%;
-	overflow: hidden;
+	/* overflow: hidden; */
 	max-width: 120ch;
 	border-radius: 12px;
 	box-shadow: 0px 3px 40px 0px rgba(172, 185, 220, 0.4);
@@ -112,7 +112,7 @@ const handleKeydown = (ev: KeyboardEvent) => {
 .slotContainer {
 	padding: 16px;
 	max-height: 60vh;
-	overflow: auto;
+	/* overflow: auto; */
 }
 .BuilderModal--overflow .slotContainer {
 	overflow: unset;

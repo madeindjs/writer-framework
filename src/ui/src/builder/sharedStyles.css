@@ -95,3 +95,12 @@ code {
 	background-color: var(--builderSubtleSeparatorColor);
 	padding: 2px;
 }
+
+@keyframe draw {
+	from {
+		stroke-dashoffset: 0;
+	}
+	to {
+		stroke-dashoffset: 100;
+	}
+}

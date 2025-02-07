@@ -22,7 +22,13 @@
 			}"
 			@click="$emit('select', option.value)"
 		>
-			<i v-if="!hideIcons" class="material-symbols-outlined">{{
+			<div
+				v-if="enableMultiSelection"
+				class="WdsDropdownMenu__item__checkbox"
+			>
+				<input type="checkbox" :checked="option.value === selected" />
+			</div>
+			<i v-else-if="!hideIcons" class="material-symbols-outlined">{{
 				getOptionIcon(option)
 			}}</i>
 			<div
@@ -31,6 +37,14 @@
 				data-writer-tooltip-strategy="overflow"
 			>
 				{{ option.label }}
+			</div>
+			<div
+				v-if="option.detail"
+				class="WdsDropdownMenu__item__detail"
+				:data-writer-tooltip="option.detail"
+				data-writer-tooltip-strategy="overflow"
+			>
+				{{ option.detail }}
 			</div>
 			<i
 				v-if="option.value === selected"
@@ -46,6 +60,7 @@
 export type WdsDropdownMenuOption = {
 	value: string;
 	label: string;
+	detail?: string;
 	icon?: string;
 };
 </script>
@@ -56,11 +71,14 @@ import { computed, PropType, ref, watch } from "vue";
 
 const props = defineProps({
 	options: {
-		type: Array as PropType<WdsDropdownMenuOption[]>,
+		type: Array as PropType<
+			WdsDropdownMenuOption[] | Readonly<WdsDropdownMenuOption[]>
+		>,
 		default: () => [],
 	},
 	hideIcons: { type: Boolean, required: false },
 	enableSearch: { type: Boolean, required: false },
+	enableMultiSelection: { type: Boolean, required: false },
 	selected: { type: String, required: false, default: undefined },
 });
 
@@ -118,7 +136,8 @@ watch(searchTerm, () => emits("search", searchTerm.value));
 
 	display: grid;
 	grid-template-columns: auto 1fr auto;
-	gap: 8px;
+	grid-template-rows: auto auto;
+	column-gap: 8px;
 	align-items: center;
 
 	border-radius: 4px;
@@ -140,12 +159,31 @@ watch(searchTerm, () => emits("search", searchTerm.value));
 .WdsDropdownMenu__item--selected {
 	background-color: var(--wdsColorBlue2);
 }
+
+.WdsDropdownMenu__item__checkbox {
+	grid-row: 0 / -1;
+	grid-row-start: 1;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.WdsDropdownMenu__item__detail,
 .WdsDropdownMenu__item__label {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
 	text-align: left;
 }
+
+.WdsDropdownMenu__item__detail {
+	grid-row: 2;
+	grid-column: 2;
+	color: var(--wdsColorGray4);
+}
+
 .WdsDropdownMenu__search-wrapper {
 	position: sticky;
 	top: 0px;

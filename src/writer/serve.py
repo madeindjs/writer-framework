@@ -26,6 +26,7 @@ from pydantic import ValidationError
 from starlette.websockets import WebSocket, WebSocketDisconnect, WebSocketState
 
 from writer import VERSION, abstract, crypto
+from writer.ai import Graph
 from writer.app_runner import AppRunner
 from writer.ss_types import (
     AppProcessServerResponse,
@@ -328,6 +329,11 @@ def get_asgi_app(
             raise HTTPException(status_code=400, detail="Cannot parse the payload.")
         return payload
 
+    @app.get("/api/writer/graphs")
+    async def fetch_writer_graph_list():
+        from writer.ai import list_graphs
+        return {"graph": list_graphs()}
+
     @app.post("/api/job/workflow/{workflow_key}")
     async def create_workflow_job(workflow_key: str, request: Request, response: Response):
         if not enable_jobs_api:
@@ -549,6 +555,7 @@ def get_asgi_app(
             app_runner.save_code(
                 session_id, req_message.payload["code"], req_message.payload["path"])
         elif req_message.type == "codeUpdate":
+<<<<<<< Updated upstream
             app_runner.update_code(session_id, req_message.payload["code"])
         elif req_message.type == "loadSourceFile":
             path = os.path.join(*req_message.payload['path'])
@@ -577,6 +584,13 @@ def get_asgi_app(
             except Exception as error:
                 response.payload = {"error": str(error)}
 
+=======
+            app_runner.update_code(
+                session_id, req_message.payload["code"])
+        elif req_message.type == "fetchWriterGraphs":
+            from writer.ai import list_graphs
+            response.payload = {"graph": list_graphs()}
+>>>>>>> Stashed changes
         await websocket.send_json(response.model_dump())
 
     async def _handle_keep_alive_message(websocket: WebSocket, session_id: str, req_message: WriterWebsocketIncoming):

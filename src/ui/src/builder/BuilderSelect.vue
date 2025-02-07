@@ -23,6 +23,7 @@
 			v-if="isOpen"
 			ref="dropdown"
 			:enable-search="enableSearch"
+			:enable-multi-selection="enableMultiSelection"
 			:options="options"
 			:selected="currentValue"
 			:style="floatingStyles"
@@ -53,12 +54,15 @@ const WdsMenu = defineAsyncComponent(() => import("@/wds/WdsDropdownMenu.vue"));
 
 const props = defineProps({
 	options: {
-		type: Array as PropType<WdsDropdownMenuOption[]>,
+		type: Array as PropType<
+			WdsDropdownMenuOption[] | Readonly<WdsDropdownMenuOption[]>
+		>,
 		default: () => [],
 	},
 	defaultIcon: { type: String, required: false, default: undefined },
 	hideIcons: { type: Boolean, required: false },
 	enableSearch: { type: Boolean, required: false },
+	enableMultiSelection: { type: Boolean, required: false },
 });
 
 const currentValue = defineModel({ type: String, required: false });
@@ -104,7 +108,7 @@ watch(
 );
 
 function onSelect(value: string) {
-	isOpen.value = false;
+	if (!props.enableMultiSelection) isOpen.value = false;
 	currentValue.value = value;
 }
 </script>
