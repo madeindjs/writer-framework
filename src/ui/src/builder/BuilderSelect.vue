@@ -19,7 +19,7 @@
 				<i class="material-symbols-outlined">{{ expandIcon }}</i>
 			</div>
 		</button>
-		<WdsMenu
+		<WdsDropdownMenu
 			v-if="isOpen"
 			ref="dropdown"
 			:enable-search="enableSearch"
@@ -50,7 +50,9 @@ import { useFloating, autoPlacement } from "@floating-ui/vue";
 import type { WdsDropdownMenuOption } from "@/wds/WdsDropdownMenu.vue";
 import { useFocusWithin } from "@/composables/useFocusWithin";
 
-const WdsMenu = defineAsyncComponent(() => import("@/wds/WdsDropdownMenu.vue"));
+const WdsDropdownMenu = defineAsyncComponent(
+	() => import("@/wds/WdsDropdownMenu.vue"),
+);
 
 const props = defineProps({
 	options: {
@@ -65,7 +67,11 @@ const props = defineProps({
 	enableMultiSelection: { type: Boolean, required: false },
 });
 
-const currentValue = defineModel({ type: String, required: false });
+const currentValue = defineModel({
+	type: [String, Array] as PropType<string | string[]>,
+	required: true,
+	default: undefined,
+});
 const isOpen = ref(false);
 const trigger = ref<HTMLElement>();
 const dropdown = ref<HTMLElement>();
@@ -83,15 +89,22 @@ const expandIcon = computed(() =>
 	isOpen.value ? "keyboard_arrow_up" : "expand_more",
 );
 
-const selectedOption = computed(() =>
-	props.options.find((o) => o.value === currentValue.value),
+const selectedOptions = computed(() =>
+	props.options.filter((o) => isSelected(o.value)),
 );
 
-const currentLabel = computed(() => selectedOption.value?.label ?? "");
+const currentLabel = computed(() =>
+	selectedOptions.value
+		.map((o) => o.label)
+		.sort()
+		.join(" / "),
+);
 
 const currentIcon = computed(() => {
 	if (props.hideIcons) return "";
-	return selectedOption.value?.icon ?? props.defaultIcon ?? "help_center";
+	return (
+		selectedOptions.value.at(0)?.icon ?? props.defaultIcon ?? "help_center"
+	);
 });
 
 // close the dropdown when clicking outside
@@ -107,9 +120,15 @@ watch(
 	{ immediate: true },
 );
 
-function onSelect(value: string) {
+function onSelect(value: string | string[]) {
 	if (!props.enableMultiSelection) isOpen.value = false;
 	currentValue.value = value;
+}
+
+function isSelected(value: string) {
+	return Array.isArray(currentValue.value)
+		? currentValue.value.includes(value)
+		: currentValue.value === value;
 }
 </script>
 

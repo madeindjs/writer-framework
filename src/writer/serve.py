@@ -555,7 +555,6 @@ def get_asgi_app(
             app_runner.save_code(
                 session_id, req_message.payload["code"], req_message.payload["path"])
         elif req_message.type == "codeUpdate":
-<<<<<<< Updated upstream
             app_runner.update_code(session_id, req_message.payload["code"])
         elif req_message.type == "loadSourceFile":
             path = os.path.join(*req_message.payload['path'])
@@ -584,13 +583,11 @@ def get_asgi_app(
             except Exception as error:
                 response.payload = {"error": str(error)}
 
-=======
             app_runner.update_code(
                 session_id, req_message.payload["code"])
         elif req_message.type == "fetchWriterGraphs":
             from writer.ai import list_graphs
             response.payload = {"graph": list_graphs()}
->>>>>>> Stashed changes
         await websocket.send_json(response.model_dump())
 
     async def _handle_keep_alive_message(websocket: WebSocket, session_id: str, req_message: WriterWebsocketIncoming):

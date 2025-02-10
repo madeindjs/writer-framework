@@ -60,14 +60,12 @@
 				>
 					<BuilderSelect
 						v-if="graphs.length > 0"
+						v-model="graphIds"
 						:options="graphs"
 						enable-search
 						enable-multi-selection
 					/>
-					<WdsTextareaInput
-						v-else
-						v-model="toolForm.graphIds"
-					></WdsTextareaInput>
+					<WdsTextareaInput v-else v-model="toolForm.graphIds" />
 				</WdsFieldWrapper>
 			</div>
 			<div class="addToolFormActions">
@@ -145,6 +143,18 @@ const toolFormInitValue: ToolForm = {
 };
 
 const toolForm = ref<ToolForm>(toolFormInitValue);
+
+const graphIds = computed<string[]>({
+	get() {
+		return toolForm.value.graphIds.split(",");
+	},
+	set(ids) {
+		toolForm.value = {
+			...toolForm.value,
+			graphIds: ids.join(","),
+		};
+	},
+});
 
 const props = defineProps<{
 	componentId: Component["id"];
@@ -259,6 +269,7 @@ function editTool(toolName: string) {
 	const tool = tools.value?.[toolName];
 	if (!tool) return;
 	toolForm.value = getFormFromToolEntry(toolName, tool);
+	loadGraphs().catch(console.error);
 }
 
 function deleteTool(toolName: string) {

@@ -18,15 +18,16 @@
 			:key="option.value"
 			class="WdsDropdownMenu__item"
 			:class="{
-				'WdsDropdownMenu__item--selected': option.value === selected,
+				'WdsDropdownMenu__item--selected': isSelected(option.value),
 			}"
-			@click="$emit('select', option.value)"
+			:data-automation-key="option.value"
+			@click="onSelect(option.value)"
 		>
 			<div
 				v-if="enableMultiSelection"
 				class="WdsDropdownMenu__item__checkbox"
 			>
-				<input type="checkbox" :checked="option.value === selected" />
+				<input type="checkbox" :checked="isSelected(option.value)" />
 			</div>
 			<i v-else-if="!hideIcons" class="material-symbols-outlined">{{
 				getOptionIcon(option)
@@ -47,7 +48,7 @@
 				{{ option.detail }}
 			</div>
 			<i
-				v-if="option.value === selected"
+				v-if="isSelected(option.value)"
 				class="material-symbols-outlined"
 			>
 				check
@@ -79,11 +80,16 @@ const props = defineProps({
 	hideIcons: { type: Boolean, required: false },
 	enableSearch: { type: Boolean, required: false },
 	enableMultiSelection: { type: Boolean, required: false },
-	selected: { type: String, required: false, default: undefined },
+	selected: {
+		type: [Array, String] as PropType<string[] | string>,
+		required: false,
+		default: () => {},
+	},
 });
 
 const emits = defineEmits({
-	select: (value: string) => typeof value === "string",
+	select: (value: string | string[]) =>
+		typeof value === "string" || Array.isArray(value),
 	search: (value: string) => typeof value === "string",
 });
 
@@ -103,6 +109,20 @@ const optionsFiltered = computed(() => {
 		option.label.toLowerCase().includes(query),
 	);
 });
+
+function isSelected(value: string) {
+	return Array.isArray(props.selected)
+		? props.selected.includes(value)
+		: props.selected === value;
+}
+
+function onSelect(value: string) {
+	if (!props.enableMultiSelection) return emits("select", value);
+
+	const values = new Set(props.selected);
+	values.has(value) ? values.delete(value) : values.add(value);
+	emits("select", [...values]);
+}
 
 watch(searchTerm, () => emits("search", searchTerm.value));
 </script>
@@ -161,8 +181,8 @@ watch(searchTerm, () => emits("search", searchTerm.value));
 }
 
 .WdsDropdownMenu__item__checkbox {
-	grid-row: 0 / -1;
 	grid-row-start: 1;
+	grid-row-end: -1;
 
 	display: flex;
 	align-items: center;
