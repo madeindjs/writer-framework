@@ -329,11 +329,6 @@ def get_asgi_app(
             raise HTTPException(status_code=400, detail="Cannot parse the payload.")
         return payload
 
-    @app.get("/api/writer/graphs")
-    async def fetch_writer_graph_list():
-        from writer.ai import list_graphs
-        return {"graph": list_graphs()}
-
     @app.post("/api/job/workflow/{workflow_key}")
     async def create_workflow_job(workflow_key: str, request: Request, response: Response):
         if not enable_jobs_api:
@@ -492,6 +487,8 @@ def get_asgi_app(
                 elif serve_mode == "edit" and req_message.type == "hashRequest":
                     new_task = asyncio.create_task(
                         _handle_hash_request(websocket, session_id, req_message))
+                # elif serve_mode == "edit" and req_message.type == "fetchWriterGraphs":
+                #     print(3)
                 elif serve_mode == "edit":
                     new_task = asyncio.create_task(
                         _handle_incoming_edit_message(websocket, session_id, req_message))
@@ -586,8 +583,8 @@ def get_asgi_app(
             app_runner.update_code(
                 session_id, req_message.payload["code"])
         elif req_message.type == "fetchWriterGraphs":
-            from writer.ai import list_graphs
-            response.payload = {"graph": list_graphs()}
+            res = await app_runner.fetch_graphs(session_id)
+            response.payload = res.payload
         await websocket.send_json(response.model_dump())
 
     async def _handle_keep_alive_message(websocket: WebSocket, session_id: str, req_message: WriterWebsocketIncoming):

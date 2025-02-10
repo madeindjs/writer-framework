@@ -38,6 +38,7 @@ from writer.ss_types import (
     ComponentUpdateRequestPayload,
     EventRequest,
     EventResponsePayload,
+    FetchGraphsRequest,
     HashRequest,
     HashRequestPayload,
     HashRequestResponsePayload,
@@ -335,6 +336,19 @@ class AppProcess(multiprocessing.Process):
                     payload=None
                 )
 
+            if self.mode == "edit" and type == "fetchWriterGraphs":
+                print('1')
+                from writer.ai import list_graphs
+                graphs = list_graphs()
+                raw_graphs = [{"name": graph.name, "id": graph.id, "description": graph.description} for graph in graphs]
+                # raw_graphs = [graph.to_dict() for graph in graphs]
+                return AppProcessServerResponse(
+                    status="ok",
+                    status_message=None,
+                    # payload=HashRequestResponsePayload(message="hello"),
+                    payload={"graphs": raw_graphs}
+                )
+
             raise MessageHandlingException("Invalid event.")
 
     def _execute_user_code(self) -> None:
@@ -425,6 +439,7 @@ class AppProcess(multiprocessing.Process):
     def _handle_message_and_get_packet(self, message_id: int, session_id: str, request: AppProcessServerRequest) -> AppProcessServerResponsePacket:
         response = None
         try:
+            print('_handle_message_and_get_packet', message_id)
             response = self._handle_message(session_id, request)
         except (MessageHandlingException, ValidationError) as e:
             response = AppProcessServerResponse(
@@ -433,6 +448,7 @@ class AppProcess(multiprocessing.Process):
                 payload=None
             )
 
+        print('_handle_message_and_get_packet', response)
         packet: AppProcessServerResponsePacket = (
             message_id, session_id, response)
         return packet
@@ -835,6 +851,12 @@ class AppRunner:
             type="componentUpdate",
             payload=payload
         ))
+
+    async def fetch_graphs(self, session_id: str) -> AppProcessServerResponse:
+        if self.mode != "edit":
+            raise PermissionError(
+                "Cannot update components in non-update mode.")
+        return await self.dispatch_message(session_id, FetchGraphsRequest(type="fetchWriterGraphs"))
 
     async def handle_event(self, session_id: str, event: WriterEvent) -> AppProcessServerResponse:
         return await self.dispatch_message(session_id, EventRequest(

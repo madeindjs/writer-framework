@@ -4,17 +4,11 @@ import { computed, readonly, shallowRef } from "vue";
 
 import type { Option } from "@/builder/BuilderSelect.vue";
 
-import graphResponse from "./graphs.json";
-
 export function useWriterGraphList(wf: ReturnType<typeof generateCore>) {
 	const graphs = shallowRef<WriterGraph[]>([]);
 
 	async function load() {
-		// const result = await wf.sendWriterGraphRequest({});
-		await new Promise((res) => setTimeout(res, 1_000));
-
-		// @ts-expect-error just for testing
-		graphs.value = graphResponse.data;
+		graphs.value = await wf.sendWriterGraphRequest({});
 	}
 
 	const options = computed(() =>
@@ -22,7 +16,7 @@ export function useWriterGraphList(wf: ReturnType<typeof generateCore>) {
 			.map<Option>((graph) => ({
 				// icon: graph.type === "connector" ? "network_node" : "graph_5",
 				label: graph.name,
-				detail: graph.type,
+				detail: graph.description,
 				value: graph.id,
 			}))
 			.sort((a, b) => a.label.localeCompare(b.label)),

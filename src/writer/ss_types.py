@@ -112,6 +112,8 @@ class ComponentUpdateRequest(AppProcessServerRequest):
     type: Literal["componentUpdate"]
     payload: ComponentUpdateRequestPayload
 
+class FetchGraphsRequest(AppProcessServerRequest):
+    type: Literal["fetchWriterGraphs"]
 
 class WriterEvent(BaseModel):
     type: str
