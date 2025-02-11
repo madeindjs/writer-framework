@@ -88,6 +88,7 @@ import WdsDropdownInput from "@/wds/WdsDropdownInput.vue";
 import WdsFieldWrapper from "@/wds/WdsFieldWrapper.vue";
 import { useWriterGraphList } from "@/composables/useWriterGraphList";
 import BuilderSelect from "../BuilderSelect.vue";
+import { useLogger } from "@/composables/useLogger";
 
 const BuilderEmbeddedCodeEditor = defineAsyncComponent(
 	() => import("../BuilderEmbeddedCodeEditor.vue"),
@@ -144,6 +145,8 @@ const toolFormInitValue: ToolForm = {
 
 const toolForm = ref<ToolForm>(toolFormInitValue);
 
+const logger = useLogger();
+
 const graphIds = computed<string[]>({
 	get() {
 		return toolForm.value.graphIds.split(",");
@@ -180,7 +183,7 @@ function resetAndShowToolFormModal() {
 		...toolFormInitValue,
 		isShown: true,
 	};
-	loadGraphs().catch(console.error);
+	loadGraphs().catch(logger.error);
 }
 
 function getToolFromForm(): Tool {
@@ -269,7 +272,7 @@ function editTool(toolName: string) {
 	const tool = tools.value?.[toolName];
 	if (!tool) return;
 	toolForm.value = getFormFromToolEntry(toolName, tool);
-	loadGraphs().catch(console.error);
+	loadGraphs().catch(logger.error);
 }
 
 function deleteTool(toolName: string) {
