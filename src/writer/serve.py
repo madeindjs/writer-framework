@@ -487,8 +487,6 @@ def get_asgi_app(
                 elif serve_mode == "edit" and req_message.type == "hashRequest":
                     new_task = asyncio.create_task(
                         _handle_hash_request(websocket, session_id, req_message))
-                # elif serve_mode == "edit" and req_message.type == "fetchWriterGraphs":
-                #     print(3)
                 elif serve_mode == "edit":
                     new_task = asyncio.create_task(
                         _handle_incoming_edit_message(websocket, session_id, req_message))
@@ -579,9 +577,6 @@ def get_asgi_app(
                 app_runner.rename_persisted_script(from_path, to_path)
             except Exception as error:
                 response.payload = {"error": str(error)}
-
-            app_runner.update_code(
-                session_id, req_message.payload["code"])
         elif req_message.type == "fetchWriterGraphs":
             res = await app_runner.fetch_graphs(session_id)
             response.payload = res.payload

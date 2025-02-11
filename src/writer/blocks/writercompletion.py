@@ -64,6 +64,5 @@ class WriterCompletion(WorkflowBlock):
             self.result = result
             self.outcome = "success"
         except BaseException as e:
-            print(e)
             self.outcome = "error"
             raise e

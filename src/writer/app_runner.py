@@ -212,8 +212,6 @@ class AppProcess(multiprocessing.Process):
 
         mutations = {}
 
-        # TODO: try to put writer.ai here
-
         try:
             mutations = session.session_state.user_state.get_mutations_as_dict()
         except BaseException:
@@ -337,15 +335,12 @@ class AppProcess(multiprocessing.Process):
                 )
 
             if self.mode == "edit" and type == "fetchWriterGraphs":
-                print('1')
                 from writer.ai import list_graphs
                 graphs = list_graphs()
                 raw_graphs = [{"name": graph.name, "id": graph.id, "description": graph.description} for graph in graphs]
-                # raw_graphs = [graph.to_dict() for graph in graphs]
                 return AppProcessServerResponse(
                     status="ok",
                     status_message=None,
-                    # payload=HashRequestResponsePayload(message="hello"),
                     payload={"graphs": raw_graphs}
                 )
 
@@ -439,7 +434,6 @@ class AppProcess(multiprocessing.Process):
     def _handle_message_and_get_packet(self, message_id: int, session_id: str, request: AppProcessServerRequest) -> AppProcessServerResponsePacket:
         response = None
         try:
-            print('_handle_message_and_get_packet', message_id)
             response = self._handle_message(session_id, request)
         except (MessageHandlingException, ValidationError) as e:
             response = AppProcessServerResponse(

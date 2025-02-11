@@ -130,17 +130,4 @@ circle {
 g.delete .cross {
 	stroke: black;
 }
-.activated {
-	stroke-dasharray: 10;
-	animation: draw 1s linear infinite;
-}
-
-@keyframes draw {
-	from {
-		stroke-dashoffset: 0;
-	}
-	to {
-		stroke-dashoffset: -100;
-	}
-}
 </style>

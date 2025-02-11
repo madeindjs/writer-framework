@@ -109,7 +109,7 @@ class WriterChat(WorkflowBlock):
                 conversation += msg
                 self._set_state(conversation_state_element, conversation)
             else:
-                for chunk in conversation.stream_complete(tools=tools, config=config):
+                for chunk in conversation.stream_complete(tools=tools):
                     if chunk.get("content") is None:
                         chunk["content"] = ""
                     msg += chunk.get("content")
@@ -119,8 +119,5 @@ class WriterChat(WorkflowBlock):
             self.result = msg
             self.outcome = "success"
         except BaseException as e:
-            import writer
-            writer.logging.log(writer.logging.WARNING, str(e))
-            print(e)
             self.outcome = "error"
             raise e
